@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:showAsAction="ifRoom" >
+
+    <group android:id="@+id/group_navigation">
+        <item
+            android:id="@+id/drawer_explore"
+            android:title="@string/explore"
+            android:icon="@drawable/ic_explore_black_24dp"/>
+        <item
+            android:id="@+id/drawer_favourite"
+            android:title="@string/favourite"
+            android:icon="@drawable/ic_favorite_black_24dp"/>
+        <item
+            android:id="@+id/drawer_people"
+            android:title="@string/people"
+            android:icon="@drawable/ic_group_black_24dp"/>
+        <item
+            android:id="@+id/drawer_notification"
+            android:title="@string/notification"
+            android:icon="@drawable/ic_notifications_none_black_24dp"/>
+    </group>
+
+    <group android:id="@+id/group_function">
+        <item
+            android:id="@+id/drawer_setting"
+            android:title="@string/setting"
+            android:icon="@drawable/ic_settings_black_24dp"/>
+        <item
+            android:id="@+id/drawer_feedback"
+            android:title="@string/feedback"
+            android:icon="@drawable/ic_feedback_black_24dp"/>
+        <item
+            android:id="@+id/drawer_about_help"
+            android:title="@string/about_help"
+            android:icon="@drawable/ic_help_black_24dp"
+            />
+    </group>
+
+</menu>
