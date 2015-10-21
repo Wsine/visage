@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.support.v7.widget.SearchView;
 import android.widget.Spinner;
 
+
 public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -32,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
         NavigationView mNavigationView = (NavigationView) findViewById(R.id.navigation);
         final DrawerLayout mDrawerLayout     = (DrawerLayout) findViewById(R.id.drawerLayout);
         Toolbar mToolbar               = (Toolbar) findViewById(R.id.toolbar);
-        Spinner emailSpinner           = (Spinner) findViewById(R.id.email_spinner);
         final FragmentManager mFragmentManager = getSupportFragmentManager();
         setSupportActionBar(mToolbar);
 
@@ -97,14 +97,6 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.email_spinner, R.layout.email_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        emailSpinner.setAdapter(adapter);
     }
 
     @Override

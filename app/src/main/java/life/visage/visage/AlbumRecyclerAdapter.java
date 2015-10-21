@@ -19,16 +19,6 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = ((Activity) parent.getContext()).getLayoutInflater();
         final View v = inflater.inflate(R.layout.album_tile, parent, false);
-        v.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                PopupMenu popup = new PopupMenu(v.getContext(), view);
-                popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
-                popup.show();
-
-                return false;
-            }
-        });
 
         return new ViewHolder(v);
     }
