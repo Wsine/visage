@@ -24,7 +24,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
         switch (position) {
             case 0: return new EventsFragment();
             case 1: return new AlbumsFragment();
-            case 2: return new PeopleFragment();
+            case 2: return new TagsFragment();
         }
 
         return new AlbumsFragment();
@@ -33,10 +33,10 @@ public class PagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         switch (position) {
-            case 0: return "Events";
-            case 1: return "Albums";
-            case 2: return "People";
+            case 0: return EventsFragment.name;
+            case 1: return AlbumsFragment.name;
+            case 2: return TagsFragment.name;
         }
-        return "AlbumsFragment";
+        return "Albums";
     }
 }

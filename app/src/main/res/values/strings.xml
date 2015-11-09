@@ -8,9 +8,9 @@
     <string name="closeDrawerContentDescRes">closeDrawerContentDescRes</string>
 
     <!--Tab Title-->
-    <string name="tab_all">all</string>
+    <string name="tag_events">all</string>
     <string name="tab_albums">Albums</string>
-    <string name="tab_videos">Videos</string>
+    <string name="tab_tags">Videos</string>
 
     <!--fragment titles-->
     <string name="title_fragment_favourite">Favourites</string>

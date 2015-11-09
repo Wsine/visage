@@ -1,10 +1,6 @@
 package life.visage.visage;
 
-import android.app.Activity;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventsFragment extends Fragment {
+    static final String name = "Events";
     private static final int mColumnWidth = 171;
 
 
@@ -40,7 +37,8 @@ public class EventsFragment extends Fragment {
         final PhotoRecyclerAdapter mAdapter = new PhotoRecyclerAdapter(mColumnWidth, Utils.getAllShownImagesPath(getActivity()));
 
         List<SectionedRecyclerViewAdapter.Section> sections =
-                new ArrayList<SectionedRecyclerViewAdapter.Section>();
+                new ArrayList<>();
+
         //Sections
         sections.add(new SectionedRecyclerViewAdapter.Section(0,"October, 2015"));
         sections.add(new SectionedRecyclerViewAdapter.Section(5,"June, 2015"));

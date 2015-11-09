@@ -2,12 +2,11 @@ package life.visage.visage;
 
 import android.app.Activity;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
 
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -26,21 +25,17 @@ public class Utils {
         String absolutePathOfImage;
         uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
-            String[] projection = {MediaStore.MediaColumns.DATA,
+        String[] projection = {MediaStore.MediaColumns.DATA,
                     MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
         cursor = activity.getContentResolver().query(uri, projection, null, null, null);
 
-        listOfAllImages.add("https://i.imgur.com/tGbaZCY.jpg");
-        int i = 0;
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    column_index_data = cursor.getColumnIndexOrThrow(MediaStore.Images.Thumbnails.DATA);
-                    absolutePathOfImage = cursor.getString(column_index_data);
+                    column_index_data = cursor.getColumnIndexOrThrow(
+                            MediaStore.Images.Thumbnails.DATA);
+                    absolutePathOfImage = "file:///" + cursor.getString(column_index_data);
                     listOfAllImages.add(absolutePathOfImage);
-                    if(++i > 30) {
-                        break;
-                    }
                 } while (cursor.moveToNext());
             }
             cursor.close();

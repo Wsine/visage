@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 public class AlbumsFragment extends Fragment {
+    final static String name = "Albums";
+
     public AlbumsFragment() {
         // do nothing
     }

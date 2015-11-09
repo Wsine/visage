@@ -2,21 +2,24 @@ package life.visage.visage;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.support.v7.widget.SearchView;
-import android.widget.Spinner;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -30,22 +33,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initInstances() {
-        NavigationView mNavigationView = (NavigationView) findViewById(R.id.navigation);
-        final DrawerLayout mDrawerLayout     = (DrawerLayout) findViewById(R.id.drawerLayout);
-        Toolbar mToolbar               = (Toolbar) findViewById(R.id.toolbar);
-        final FragmentManager mFragmentManager = getSupportFragmentManager();
+        final DrawerLayout mDrawerLayout        = (DrawerLayout) findViewById(R.id.drawerLayout);
+        final FragmentManager mFragmentManager  = getSupportFragmentManager();
+        NavigationView mNavigationView          = (NavigationView) findViewById(R.id.navigation);
+        Toolbar mToolbar                        = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-
 
         mFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, new MainFragment()).commit();
-
-        mDrawerToggle = new ActionBarDrawerToggle(
-                this,
-                mDrawerLayout,
-                R.string.openDrawerContentDescRes,
-                R.string.closeDrawerContentDescRes);
-        mDrawerToggle.syncState();
 
         mNavigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -78,12 +73,12 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
 
-                        if(mFragment != null) {
+                        if (mFragment != null) {
                             mFragmentManager.beginTransaction()
-                                .replace(R.id.fragment_container, mFragment)
-                                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                                .addToBackStack(null)
-                                .commit();
+                                    .replace(R.id.fragment_container, mFragment)
+                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                                    .addToBackStack(null)
+                                    .commit();
                         }
 
                         mDrawerLayout.closeDrawer(Gravity.LEFT);
@@ -93,10 +88,28 @@ public class MainActivity extends AppCompatActivity {
         );
 
         // Set the drawer toggle as the DrawerListener
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                mDrawerLayout,
+                R.string.openDrawerContentDescRes,
+                R.string.closeDrawerContentDescRes);
+        mDrawerToggle.syncState();
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+
+        // Create global configuration and initialize ImageLoader with this config
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .showImageOnLoading(R.drawable.placeholder)
+                .displayer(new FadeInBitmapDisplayer(500))
+                .build();
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+                .defaultDisplayImageOptions(defaultOptions)
+                .build();
+        ImageLoader.getInstance().init(config);
     }
 
     @Override

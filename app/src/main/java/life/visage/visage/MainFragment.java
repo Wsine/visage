@@ -17,10 +17,11 @@ public class MainFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_main, container, false);
-        ViewPager mViewPager = (ViewPager) root.findViewById(R.id.pager);
-        TabLayout mTabLayout = (TabLayout) root.findViewById(R.id.tabLayout);
-        Toolbar mToolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        View mRootView            = inflater.inflate(R.layout.fragment_main, container, false);
+        ViewPager mViewPager = (ViewPager) mRootView.findViewById(R.id.pager);
+        TabLayout mTabLayout = (TabLayout) mRootView.findViewById(R.id.tabLayout);
+        Toolbar mToolbar     = (Toolbar) getActivity().findViewById(R.id.toolbar);
+
         ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.app_name);
 
@@ -28,6 +29,6 @@ public class MainFragment extends Fragment {
         mTabLayout.setupWithViewPager(mViewPager);
         mViewPager.setCurrentItem(1);
 
-        return root;
+        return mRootView;
     }
 }

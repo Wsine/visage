@@ -1,21 +1,21 @@
 package life.visage.visage;
 
 import android.app.Activity;
-import android.content.DialogInterface;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.media.ThumbnailUtils;
-import android.net.Uri;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Picasso;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 import java.util.ArrayList;
 
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 public class PhotoRecyclerAdapter extends RecyclerView.Adapter<PhotoRecyclerAdapter.ViewHolder> {
     private int mColumnWidth;
     private ArrayList<String> mImagePath;
+    private Bitmap mPlaceHolderBitmap;
 
     @Override
     public ViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
@@ -59,8 +60,7 @@ public class PhotoRecyclerAdapter extends RecyclerView.Adapter<PhotoRecyclerAdap
         }
 
         public void bindData(int position) {
-            mImageView.setImageBitmap(ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(mImagePath.get(position)),
-                    mColumnWidth, mColumnWidth));
+            ImageLoader.getInstance().displayImage(mImagePath.get(position), mImageView);
         }
     }
 
