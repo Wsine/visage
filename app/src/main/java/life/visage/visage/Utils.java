@@ -2,8 +2,6 @@ package life.visage.visage;
 
 import android.app.Activity;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 
@@ -18,16 +16,14 @@ public class Utils {
     }
 
     static public ArrayList<String> getAllShownImagesPath(Activity activity) {
-        Uri uri;
-        Cursor cursor;
+        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         int column_index_data;
         ArrayList<String> listOfAllImages = new ArrayList<>();
         String absolutePathOfImage;
-        uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
         String[] projection = {MediaStore.MediaColumns.DATA,
                     MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
-        cursor = activity.getContentResolver().query(uri, projection, null, null, null);
+        Cursor cursor = activity.getContentResolver().query(uri, projection, null, null, null);
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {

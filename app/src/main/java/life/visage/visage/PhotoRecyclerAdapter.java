@@ -1,21 +1,15 @@
 package life.visage.visage;
 
 import android.app.Activity;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.Image;
-import android.media.ThumbnailUtils;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -26,7 +20,6 @@ import java.util.ArrayList;
 public class PhotoRecyclerAdapter extends RecyclerView.Adapter<PhotoRecyclerAdapter.ViewHolder> {
     private int mColumnWidth;
     private ArrayList<String> mImagePath;
-    private Bitmap mPlaceHolderBitmap;
 
     @Override
     public ViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
@@ -36,7 +29,6 @@ public class PhotoRecyclerAdapter extends RecyclerView.Adapter<PhotoRecyclerAdap
 
         return new ViewHolder(rootView);
     }
-
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
@@ -60,7 +52,12 @@ public class PhotoRecyclerAdapter extends RecyclerView.Adapter<PhotoRecyclerAdap
         }
 
         public void bindData(int position) {
-            ImageLoader.getInstance().displayImage(mImagePath.get(position), mImageView);
+            Picasso.with(mImageView.getContext())
+                    .load(mImagePath.get(position))
+                    .placeholder(R.drawable.placeholder)
+                    .resize(mColumnWidth, mColumnWidth)
+                    .centerCrop()
+                    .into(mImageView);
         }
     }
 
@@ -68,6 +65,4 @@ public class PhotoRecyclerAdapter extends RecyclerView.Adapter<PhotoRecyclerAdap
         mColumnWidth = width;
         mImagePath = imagePath;
     }
-
-
 }

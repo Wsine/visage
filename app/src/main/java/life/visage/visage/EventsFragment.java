@@ -12,11 +12,20 @@ import java.util.List;
 
 public class EventsFragment extends Fragment {
     static final String name = "Events";
+    private static EventsFragment instance;
     private static final int mColumnWidth = 171;
 
 
-    public EventsFragment() {
+    private EventsFragment() {
         // Required empty public constructor
+    }
+
+    public static EventsFragment getInstance() {
+        if (instance == null) {
+            instance = new EventsFragment();
+        }
+
+        return instance;
     }
 
     @Override
@@ -34,7 +43,8 @@ public class EventsFragment extends Fragment {
         mRecyclerView.addItemDecoration(new GridSpacingDecoration(
                 getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
 
-        final PhotoRecyclerAdapter mAdapter = new PhotoRecyclerAdapter(mColumnWidth, Utils.getAllShownImagesPath(getActivity()));
+        final PhotoRecyclerAdapter mAdapter = new PhotoRecyclerAdapter(
+                mColumnWidth, Utils.getAllShownImagesPath(getActivity()));
 
         List<SectionedRecyclerViewAdapter.Section> sections =
                 new ArrayList<>();

@@ -6,10 +6,6 @@
 
     <group android:id="@+id/group_navigation">
         <item
-            android:id="@+id/drawer_explore"
-            android:title="@string/explore"
-            android:icon="@drawable/ic_explore_black_24dp"/>
-        <item
             android:id="@+id/drawer_favourite"
             android:title="@string/favourite"
             android:icon="@drawable/ic_favorite_black_24dp"/>

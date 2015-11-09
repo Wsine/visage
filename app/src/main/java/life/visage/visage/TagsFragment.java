@@ -8,9 +8,18 @@ import android.view.ViewGroup;
 
 public class TagsFragment extends Fragment {
     final static String name = "Tags";
+    private static TagsFragment instance;
 
-    public TagsFragment() {
+    private TagsFragment() {
         // Required empty public constructor
+    }
+
+    public static TagsFragment getInstance() {
+        if (instance == null) {
+            instance = new TagsFragment();
+        }
+
+        return instance;
     }
 
     @Override

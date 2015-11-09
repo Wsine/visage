@@ -22,12 +22,12 @@ public class PagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            case 0: return new EventsFragment();
-            case 1: return new AlbumsFragment();
-            case 2: return new TagsFragment();
+            case 0: return EventsFragment.getInstance();
+            case 1: return AlbumsFragment.getInstance();
+            case 2: return TagsFragment.getInstance();
         }
 
-        return new AlbumsFragment();
+        return AlbumsFragment.getInstance();
     }
 
     @Override

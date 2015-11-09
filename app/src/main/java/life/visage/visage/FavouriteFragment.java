@@ -26,7 +26,7 @@ public class FavouriteFragment extends Fragment {
     }
 
     public String getTitle() {
-        return getResources().getString(R.string.title_fragment_explore);
+        return getResources().getString(R.string.title_fragment_favourite);
     }
 
     @Nullable
