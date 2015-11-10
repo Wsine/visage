@@ -1,12 +1,11 @@
 package life.visage.visage;
 
-import android.app.Activity;
-import android.database.Cursor;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -16,10 +15,9 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-public class FavouriteFragment extends Fragment {
+public class FavouriteFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener{
+    private ArrayList<String> imagePath;
     private static final int mColumnWidth = 171;
-
-    private int spanCount = 5;
 
     public FavouriteFragment() {
         // required default constructor
@@ -46,10 +44,23 @@ public class FavouriteFragment extends Fragment {
         mRecyclerView.addItemDecoration(new GridSpacingDecoration(
                 getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
 
-        final PhotoRecyclerAdapter mAdapter = new PhotoRecyclerAdapter(mColumnWidth, Utils.getAllShownImagesPath(getActivity()));
+        imagePath = Utils.getAllShownImagesPath(getActivity());
+        final PhotoRecyclerAdapter mAdapter = new PhotoRecyclerAdapter(mColumnWidth, imagePath);
         mRecyclerView.setAdapter(mAdapter);
-
+        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this.getActivity(), this));
         return root;
+    }
+
+    @Override
+    public void onItemClick(View childView, int position) {
+        startActivity(new Intent(getContext(), PhotoActivity.class)
+                .putStringArrayListExtra("KEY", imagePath)
+                .putExtra("CURRENT", position));
+    }
+
+    @Override
+    public void onItemLongPress(View childView, int position) {
+
     }
 }
 

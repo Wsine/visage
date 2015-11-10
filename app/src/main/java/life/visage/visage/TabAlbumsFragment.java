@@ -2,25 +2,26 @@ package life.visage.visage;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class AlbumsFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener {
+public class TabAlbumsFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener {
     final static String name = "Albums";
-    private static AlbumsFragment instance;
+    private static TabAlbumsFragment instance;
 
-    private AlbumsFragment() {
+    private TabAlbumsFragment() {
         // do nothing
     }
 
-    static public AlbumsFragment getInstance() {
+    static public TabAlbumsFragment getInstance() {
         if (instance == null) {
-            instance = new AlbumsFragment();
+            instance = new TabAlbumsFragment();
         }
 
         return instance;
@@ -66,7 +67,12 @@ public class AlbumsFragment extends Fragment implements RecyclerItemClickListene
 
     @Override
     public void onItemClick(View childView, int position) {
-        Toast.makeText(getContext(), "Clicked!", Toast.LENGTH_LONG).show();
+        FragmentManager mFragmentManager = getActivity().getSupportFragmentManager();
+        mFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, new FavouriteFragment())
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override

@@ -7,10 +7,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 /**
  * Created by Brian on 2015/10/5.
  */
-public class PagerAdapter extends FragmentPagerAdapter {
+public class TabLayoutPagerAdapter extends FragmentPagerAdapter {
     final static int NUM_PAGES = 3;
 
-    public PagerAdapter(FragmentManager mFragmentManager) {
+    public TabLayoutPagerAdapter(FragmentManager mFragmentManager) {
         super(mFragmentManager);
     }
 
@@ -22,20 +22,20 @@ public class PagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            case 0: return EventsFragment.getInstance();
-            case 1: return AlbumsFragment.getInstance();
-            case 2: return TagsFragment.getInstance();
+            case 0: return TabEventsFragment.getInstance();
+            case 1: return TabAlbumsFragment.getInstance();
+            case 2: return TabTagsFragment.getInstance();
         }
 
-        return AlbumsFragment.getInstance();
+        return TabAlbumsFragment.getInstance();
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
         switch (position) {
-            case 0: return EventsFragment.name;
-            case 1: return AlbumsFragment.name;
-            case 2: return TagsFragment.name;
+            case 0: return TabEventsFragment.name;
+            case 1: return TabAlbumsFragment.name;
+            case 2: return TabTagsFragment.name;
         }
         return "Albums";
     }

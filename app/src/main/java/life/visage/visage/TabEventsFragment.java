@@ -10,19 +10,19 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventsFragment extends Fragment {
+public class TabEventsFragment extends Fragment {
     static final String name = "Events";
-    private static EventsFragment instance;
+    private static TabEventsFragment instance;
     private static final int mColumnWidth = 171;
 
 
-    private EventsFragment() {
+    private TabEventsFragment() {
         // Required empty public constructor
     }
 
-    public static EventsFragment getInstance() {
+    public static TabEventsFragment getInstance() {
         if (instance == null) {
-            instance = new EventsFragment();
+            instance = new TabEventsFragment();
         }
 
         return instance;

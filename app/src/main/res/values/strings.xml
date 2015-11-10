@@ -35,5 +35,6 @@
         <item>Switch user</item>
         <item>Log out</item>
     </string-array>
+    <string name="title_activity_photo">PhotoActivity</string>
 
 </resources>

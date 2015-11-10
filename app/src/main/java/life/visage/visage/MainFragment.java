@@ -25,7 +25,7 @@ public class MainFragment extends Fragment {
         ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.app_name);
 
-        mViewPager.setAdapter(new PagerAdapter(getChildFragmentManager()));
+        mViewPager.setAdapter(new TabLayoutPagerAdapter(getChildFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
         mViewPager.setCurrentItem(1);
 

@@ -6,17 +6,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class TagsFragment extends Fragment {
+public class TabTagsFragment extends Fragment {
     final static String name = "Tags";
-    private static TagsFragment instance;
+    private static TabTagsFragment instance;
 
-    private TagsFragment() {
+    private TabTagsFragment() {
         // Required empty public constructor
     }
 
-    public static TagsFragment getInstance() {
+    public static TabTagsFragment getInstance() {
         if (instance == null) {
-            instance = new TagsFragment();
+            instance = new TabTagsFragment();
         }
 
         return instance;
