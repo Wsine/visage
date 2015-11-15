@@ -3,7 +3,9 @@ package life.visage.visage;
 import android.app.Activity;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -16,27 +18,28 @@ public class Utils {
     }
 
     static public ArrayList<String> getAllShownImagesPath(Activity activity) {
-        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        int column_index_data;
-        ArrayList<String> listOfAllImages = new ArrayList<>();
-        String absolutePathOfImage;
-
+        Uri URIS[] = {MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            MediaStore.Images.Media.INTERNAL_CONTENT_URI};
         String[] projection = {MediaStore.MediaColumns.DATA,
-                    MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
-        Cursor cursor = activity.getContentResolver().query(uri, projection, null, null, null);
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
 
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                do {
-                    column_index_data = cursor.getColumnIndexOrThrow(
-                            MediaStore.Images.Thumbnails.DATA);
-                    absolutePathOfImage = "file:///" + cursor.getString(column_index_data);
-                    listOfAllImages.add(absolutePathOfImage);
-                } while (cursor.moveToNext());
+        ArrayList<String> listOfAllImages = new ArrayList<>();
+        for (Uri uri : URIS) {
+            int column_index_data;
+            String absolutePathOfImage;
+            Cursor cursor = activity.getContentResolver().query(uri, projection, null, null, null);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    do {
+                        column_index_data = cursor.getColumnIndexOrThrow(
+                                MediaStore.Images.Thumbnails.DATA);
+                        absolutePathOfImage = "file:///" + cursor.getString(column_index_data);
+                        listOfAllImages.add(absolutePathOfImage);
+                    } while (cursor.moveToNext());
+                }
+                cursor.close();
             }
-            cursor.close();
         }
-
         return listOfAllImages;
     }
 }

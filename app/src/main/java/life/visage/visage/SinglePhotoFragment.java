@@ -30,6 +30,7 @@ public class SinglePhotoFragment extends DialogFragment{
         View v = inflater.inflate(R.layout.photo_detail, container, false);
         ImageView mImageView = (ImageView) v.findViewById(R.id.photo_detail);
         Picasso.with(mImageView.getContext()).load(pathName).into(mImageView);
+
         return v;
     }
 }
