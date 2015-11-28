@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -15,22 +13,22 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-public class FavouriteFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener{
+public class CollectionFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener{
     private ArrayList<String> imagePath;
     private static final int mColumnWidth = 171;
 
-    public FavouriteFragment() {
+    public CollectionFragment() {
         // required default constructor
     }
 
     public String getTitle() {
-        return getResources().getString(R.string.title_fragment_favourite);
+        return getArguments().getString(Utils.COLLECTION_NAME);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_favourite, container, false);
+        View root = inflater.inflate(R.layout.fragment_collection, container, false);
         Toolbar mToolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getTitle());
@@ -44,7 +42,10 @@ public class FavouriteFragment extends Fragment implements RecyclerItemClickList
         mRecyclerView.addItemDecoration(new GridSpacingDecoration(
                 getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
 
-        imagePath = Utils.getAllShownImagesPath(getActivity());
+        imagePath = getArguments().getStringArrayList(Utils.PHOTO_COLLECTION_LIST);
+        if (imagePath == null) {
+            imagePath = Utils.getAllShownImagesPath(getActivity());
+        }
         final PhotoRecyclerAdapter mAdapter = new PhotoRecyclerAdapter(mColumnWidth, imagePath);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this.getActivity(), this));
@@ -54,8 +55,8 @@ public class FavouriteFragment extends Fragment implements RecyclerItemClickList
     @Override
     public void onItemClick(View childView, int position) {
         startActivity(new Intent(getContext(), PhotoActivity.class)
-                .putStringArrayListExtra("KEY", imagePath)
-                .putExtra("CURRENT", position));
+                .putStringArrayListExtra(Utils.PHOTO_PATH_LIST, imagePath)
+                .putExtra(Utils.CURRENT_POSITION, position));
     }
 
     @Override

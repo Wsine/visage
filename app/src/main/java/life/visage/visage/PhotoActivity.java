@@ -21,8 +21,8 @@ public class PhotoActivity extends AppCompatActivity {
 
         ViewPager mViewPager = (ViewPager) findViewById(R.id.photo_pager);
         mViewPager.setAdapter(new PhotoPagerAdapter(
-                getSupportFragmentManager(), getIntent().getStringArrayListExtra("KEY")));
-        mViewPager.setCurrentItem(getIntent().getIntExtra("CURRENT", 1));
+                getSupportFragmentManager(), getIntent().getStringArrayListExtra(Utils.PHOTO_PATH_LIST)));
+        mViewPager.setCurrentItem(getIntent().getIntExtra(Utils.CURRENT_POSITION, 1));
     }
 
 }

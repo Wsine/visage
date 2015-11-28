@@ -3,6 +3,7 @@ package life.visage.visage;
 import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +16,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -44,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                         Fragment mFragment = null;
                         switch (menuItem.getItemId()) {
                             case R.id.drawer_favourite: {
-                                mFragment = new FavouriteFragment();
+                                mFragment = new CollectionFragment();
                                 break;
                             }
                             case R.id.drawer_people: {

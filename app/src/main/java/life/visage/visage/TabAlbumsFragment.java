@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 public class TabAlbumsFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener {
     final static String name = "Albums";
+    ArrayList<Album> mAlbums = new ArrayList<>();
     private static TabAlbumsFragment instance;
 
     private TabAlbumsFragment() {
@@ -30,6 +31,10 @@ public class TabAlbumsFragment extends Fragment implements RecyclerItemClickList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        for (String albumName : Utils.getAllAlbumNames(getActivity())) {
+            mAlbums.add(new Album(R.drawable.cat, albumName));
+        }
     }
 
     @Override
@@ -48,17 +53,6 @@ public class TabAlbumsFragment extends Fragment implements RecyclerItemClickList
         mRecyclerView.setLayoutManager(mGridLayoutManager);
         mRecyclerView.addItemDecoration(new GridSpacingDecoration(
                 getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
-
-        ArrayList<Album> mAlbums = new ArrayList<>();
-        mAlbums.add(new Album(R.drawable.family, "Family"));
-        mAlbums.add(new Album(R.drawable.cat, "Cat"));
-        mAlbums.add(new Album(R.drawable.dog, "Dog"));
-        mAlbums.add(new Album(R.drawable.travelling, "Travelling"));
-        mAlbums.add(new Album(R.drawable.landscape, "Landscape"));
-        mAlbums.add(new Album(R.drawable.tea, "Tea"));
-        mAlbums.add(new Album(R.drawable.sport, "Sport"));
-        mAlbums.add(new Album(R.drawable.food, "Food"));
-
         mRecyclerView.setAdapter(new AlbumRecyclerAdapter(mAlbums));
         mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this.getActivity(), this));
 
@@ -68,8 +62,14 @@ public class TabAlbumsFragment extends Fragment implements RecyclerItemClickList
     @Override
     public void onItemClick(View childView, int position) {
         FragmentManager mFragmentManager = getActivity().getSupportFragmentManager();
+        Fragment fragment = new CollectionFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(Utils.COLLECTION_NAME, mAlbums.get(position).mAlbumName);
+        bundle.putStringArrayList(Utils.PHOTO_COLLECTION_LIST,
+                Utils.getPhotosInAlbum(getActivity(), mAlbums.get(position).mAlbumName));
+        fragment.setArguments(bundle);
         mFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, new FavouriteFragment())
+                .replace(R.id.fragment_container, fragment)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack(null)
                 .commit();
