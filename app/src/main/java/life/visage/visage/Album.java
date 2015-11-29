@@ -14,12 +14,12 @@ class Album {
     /**
      * The list of absolute path of image files in the album.
      */
-    private ArrayList<String> list;
+    private ArrayList<Photo> list;
 
-    public Album(String name, ArrayList<String> list) {
+    public Album(String name, ArrayList<Photo> list) {
         this.name = name;
         this.list = list;
-        this.cover = list.get(list.size()-1);
+        this.cover = list.get(list.size()-1).getPath();
     }
 
     public String getCover() {
@@ -38,11 +38,11 @@ class Album {
         this.name = name;
     }
 
-    public ArrayList<String> getList() {
+    public ArrayList<Photo> getList() {
         return list;
     }
 
-    public void setList(ArrayList<String> list) {
+    public void setList(ArrayList<Photo> list) {
         this.list = list;
     }
 }

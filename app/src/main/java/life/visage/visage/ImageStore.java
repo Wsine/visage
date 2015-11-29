@@ -22,51 +22,71 @@ public class ImageStore {
         // private constructor of no use
     }
 
+    public static ArrayList<Photo> getAllPhotos(Context context) {
+        ArrayList<Photo> listOfPhotos = new ArrayList<>();
+        String[] projection = {
+                MediaStore.Images.ImageColumns.DATA,
+                MediaStore.Images.ImageColumns.DATE_TAKEN};
+        Cursor cursor = MediaStore.Images.Media.query(
+                context.getContentResolver(),
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                null, null, MediaStore.Images.ImageColumns.DATE_TAKEN
+        );
+        while (cursor.moveToNext()) {
+            String path = FILE_SLASH + cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA));
+            Long date = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN));
+            Photo photo = new Photo(path);
+            photo.setDate(date);
+            listOfPhotos.add(photo);
+        }
+        return listOfPhotos;
+    }
+
     public static ArrayList<Album> getAllAlbums(Context context) {
         ArrayList<Album> albumList = new ArrayList<>();
         Set<String> albumNameList = new LinkedHashSet<>();
         Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
         String BUCKET_DISPLAY_NAME = MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME;
-        String DATA = MediaStore.Images.ImageColumns.DATA;
-        String DATE_TAKEN = MediaStore.Images.ImageColumns.DATE_TAKEN;
-        String[] projection = {BUCKET_DISPLAY_NAME, DATA, DATE_TAKEN};
+        String[] projection = {BUCKET_DISPLAY_NAME};
 
-        Cursor outCursor = MediaStore.Images.Media.query(
+        Cursor cursor = MediaStore.Images.Media.query(
                 context.getContentResolver(), uri, projection, null, null, BUCKET_DISPLAY_NAME);
-        while (outCursor.moveToNext()) {
-            albumNameList.add(outCursor.getString(outCursor.getColumnIndexOrThrow(BUCKET_DISPLAY_NAME)));
-        }
-        outCursor.close();
+        while (cursor.moveToNext()) {
+            albumNameList.add(cursor.getString(cursor.getColumnIndexOrThrow(BUCKET_DISPLAY_NAME)));
+        } cursor.close();
 
-        String selection = BUCKET_DISPLAY_NAME + " = ?";
         for (String name : albumNameList) {
-            ArrayList<String> photoList = new ArrayList<>();
-            String[] selectionArgs = {name};
-            Cursor innerCursor = MediaStore.Images.Media.query(
-                    context.getContentResolver(), uri, projection, selection, selectionArgs, DATE_TAKEN);
-            while (innerCursor.moveToNext()) {
-                photoList.add(FILE_SLASH + innerCursor.getString(innerCursor.getColumnIndexOrThrow(DATA)));
-            }
-            innerCursor.close();
-            albumList.add(new Album(name, photoList));
+            albumList.add(new Album(name, getPhotosInAlbum(context, name)));
         }
         return albumList;
     }
 
-    public static ArrayList<String> getPhotosInAlbum(Context context, String albumName) {
-        ArrayList<String> listOfPhotos = new ArrayList<>();
+    public static ArrayList<Photo> getPhotosInAlbum(Context context, String albumName) {
+        ArrayList<Photo> listOfPhotos = new ArrayList<>();
+
+        String[] projection = {
+                MediaStore.Images.ImageColumns.DATA,
+                MediaStore.Images.ImageColumns.DATE_TAKEN};
+        String selection = MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME + " = ?";
+        String[] selectioArgs = {albumName};
+
         Cursor cursor = MediaStore.Images.Media.query(
                 context.getContentResolver(),
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                new String[] {MediaStore.Images.Media.DATA},
-                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME + " = ?",
-                new String[] {albumName},
+                projection,
+                selection,
+                selectioArgs,
                 MediaStore.Images.ImageColumns.DATE_TAKEN
         );
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                listOfPhotos.add(FILE_SLASH + cursor.getString(cursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA)));
+                String path = FILE_SLASH + cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA));
+                Long date = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN));
+                Photo photo = new Photo(path);
+                photo.setDate(date);
+                listOfPhotos.add(photo);
             }
         }
         return listOfPhotos;

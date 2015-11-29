@@ -62,8 +62,6 @@ public class TabAlbumsFragment extends Fragment implements RecyclerItemClickList
         Fragment fragment = new CollectionFragment();
         Bundle bundle = new Bundle();
         bundle.putString(Utils.COLLECTION_NAME, mAlbums.get(position).getName());
-        bundle.putStringArrayList(Utils.PHOTO_COLLECTION_LIST,
-                ImageStore.getPhotosInAlbum(getActivity(), mAlbums.get(position).getName()));
         fragment.setArguments(bundle);
         mFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)

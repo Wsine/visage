@@ -19,7 +19,7 @@ import java.util.ArrayList;
  */
 public class PhotoRecyclerAdapter extends RecyclerView.Adapter<PhotoRecyclerAdapter.ViewHolder> {
     private int mColumnWidth;
-    private ArrayList<String> mImagePath;
+    private ArrayList<Photo> photoArrayList;
 
     @Override
     public ViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
@@ -37,7 +37,7 @@ public class PhotoRecyclerAdapter extends RecyclerView.Adapter<PhotoRecyclerAdap
 
     @Override
     public int getItemCount() {
-        return mImagePath.size();
+        return photoArrayList.size();
     }
 
     // Provide a reference to the views for each data item
@@ -53,7 +53,7 @@ public class PhotoRecyclerAdapter extends RecyclerView.Adapter<PhotoRecyclerAdap
 
         public void bindData(int position) {
             Picasso.with(mImageView.getContext())
-                    .load(mImagePath.get(position))
+                    .load(photoArrayList.get(position).getPath())
                     .placeholder(R.drawable.placeholder)
                     .resize(mColumnWidth, mColumnWidth)
                     .centerCrop()
@@ -61,8 +61,8 @@ public class PhotoRecyclerAdapter extends RecyclerView.Adapter<PhotoRecyclerAdap
         }
     }
 
-    public PhotoRecyclerAdapter(int width, ArrayList<String> imagePath) {
+    public PhotoRecyclerAdapter(int width, ArrayList<Photo> pathList) {
         mColumnWidth = width;
-        mImagePath = imagePath;
+        photoArrayList = pathList;
     }
 }
