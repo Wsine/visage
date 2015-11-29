@@ -24,38 +24,6 @@ public class Utils {
         // to make this class uninstantiable
     }
 
-    public static Set<String> getAllAlbumNames(Activity activity) {
-        Set<String> listOfAllAlbumNames = new LinkedHashSet<>();
-        Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        String COLUMN = MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME;
-        Cursor cursor = activity.getContentResolver().query(uri, new String[] {COLUMN}, null, null, null);
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                listOfAllAlbumNames.add(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN)));
-            }
-            cursor.close();
-        }
-        return listOfAllAlbumNames;
-    }
-
-    public static ArrayList<String> getPhotosInAlbum(Context context, String albumName) {
-        ArrayList<String> listOfPhotos = new ArrayList<>();
-        Cursor cursor = MediaStore.Images.Media.query(
-                context.getContentResolver(),
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                new String[] {MediaStore.Images.Media.DATA},
-                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME + " = ?",
-                new String[] {albumName},
-                MediaStore.Images.ImageColumns.DATE_TAKEN
-        );
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                listOfPhotos.add("file:///" + cursor.getString(cursor.getColumnIndex(MediaStore.Images.Thumbnails.DATA)));
-            }
-        }
-        return listOfPhotos;
-    }
-
     static public ArrayList<String> getAllShownImagesPath(Activity activity) {
         Uri URIS[] = {MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
             MediaStore.Images.Media.INTERNAL_CONTENT_URI};

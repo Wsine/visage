@@ -31,10 +31,7 @@ public class TabAlbumsFragment extends Fragment implements RecyclerItemClickList
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        for (String albumName : Utils.getAllAlbumNames(getActivity())) {
-            mAlbums.add(new Album(R.drawable.cat, albumName));
-        }
+        mAlbums = ImageStore.getAllAlbums(getContext());
     }
 
     @Override
@@ -64,9 +61,9 @@ public class TabAlbumsFragment extends Fragment implements RecyclerItemClickList
         FragmentManager mFragmentManager = getActivity().getSupportFragmentManager();
         Fragment fragment = new CollectionFragment();
         Bundle bundle = new Bundle();
-        bundle.putString(Utils.COLLECTION_NAME, mAlbums.get(position).mAlbumName);
+        bundle.putString(Utils.COLLECTION_NAME, mAlbums.get(position).getName());
         bundle.putStringArrayList(Utils.PHOTO_COLLECTION_LIST,
-                Utils.getPhotosInAlbum(getActivity(), mAlbums.get(position).mAlbumName));
+                ImageStore.getPhotosInAlbum(getActivity(), mAlbums.get(position).getName()));
         fragment.setArguments(bundle);
         mFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)

@@ -40,13 +40,13 @@ public class TabTagsFragment extends Fragment {
         ListView list = (ListView) view.findViewById(R.id.album_list);
 
         String[] projection = {
-                MediaStore.MediaColumns._ID,
-                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
-                MediaStore.Images.ImageColumns.BUCKET_ID
+                ImageStore.ImageColumns._ID,
+                ImageStore.ImageColumns.DATA,
+                ImageStore.ImageColumns.CATEGORY
         };
         String[] from = {
-                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
-                MediaStore.Images.ImageColumns.BUCKET_ID
+                ImageStore.ImageColumns._ID,
+                ImageStore.ImageColumns.DATA,
         };
         int[] to = {
                 R.id.bucket_display_name,
@@ -55,10 +55,12 @@ public class TabTagsFragment extends Fragment {
         list.setAdapter(new SimpleCursorAdapter(
                 getActivity(),
                 R.layout.album_entry,
-                getActivity().getContentResolver().query(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                ImageStore.OpenHelper.getInstance(getActivity()).query(
                         projection,
-                        null, null, null),
+                        null,
+                        null,
+                        null
+                ),
                 from,
                 to,
                 SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));

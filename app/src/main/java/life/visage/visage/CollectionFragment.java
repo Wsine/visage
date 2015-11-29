@@ -28,14 +28,14 @@ public class CollectionFragment extends Fragment implements RecyclerItemClickLis
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_collection, container, false);
+        View view = inflater.inflate(R.layout.fragment_collection, container, false);
         Toolbar mToolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getTitle());
 
-        RecyclerView mRecyclerView = (RecyclerView) root.findViewById(R.id.recycler_favourite);
+        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_favourite);
         final GridAutofitLayoutManager mGridLayoutManager =
-                new GridAutofitLayoutManager(root.getContext(), mColumnWidth);
+                new GridAutofitLayoutManager(view.getContext(), mColumnWidth);
 
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mGridLayoutManager);
@@ -49,7 +49,7 @@ public class CollectionFragment extends Fragment implements RecyclerItemClickLis
         final PhotoRecyclerAdapter mAdapter = new PhotoRecyclerAdapter(mColumnWidth, imagePath);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this.getActivity(), this));
-        return root;
+        return view;
     }
 
     @Override

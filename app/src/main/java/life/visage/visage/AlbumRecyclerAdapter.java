@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 
 public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdapter.ViewHolder> {
@@ -47,8 +49,14 @@ public class AlbumRecyclerAdapter extends RecyclerView.Adapter<AlbumRecyclerAdap
         }
 
         public void bindData(int position) {
-            mImageView.setImageResource(mAlbums.get(position).mResourceId);
-            mTextView.setText(mAlbums.get(position).mAlbumName);
+            int width = mImageView.getResources().getDimensionPixelSize(R.dimen.album_width);
+            Picasso.with(mImageView.getContext())
+                    .load(mAlbums.get(position).getCover())
+                    .resize(width, width)
+                    .placeholder(R.drawable.placeholder)
+                    .centerCrop()
+                    .into(mImageView);
+            mTextView.setText(mAlbums.get(position).getName());
             mTextView.getBackground().setAlpha(90);
         }
     }
