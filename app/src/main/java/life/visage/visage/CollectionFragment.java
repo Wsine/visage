@@ -17,11 +17,18 @@ import android.widget.Toast;
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
 
 public class CollectionFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener {
     List<SectionedRecyclerViewAdapter.Section> mSectionTitles = new ArrayList<>();
@@ -57,6 +64,9 @@ public class CollectionFragment extends Fragment implements RecyclerItemClickLis
 
 
         ArrayList<Photo> photoList = ImageStore.getPhotosInAlbum(getContext(), COLLECTION_NAME);
+        for (Photo photo : photoList) {
+            pathList.add(photo.getPath());
+        }
         getSectionTitles(photoList);
 
         PhotoRecyclerAdapter mAdapter = new PhotoRecyclerAdapter(mColumnWidth, photoList);
@@ -81,10 +91,17 @@ public class CollectionFragment extends Fragment implements RecyclerItemClickLis
 
     @Override
     public void onItemClick(View childView, int position) {
-        startActivity(new Intent(getContext(), PhotoActivity.class)
-                .putStringArrayListExtra(Utils.PHOTO_PATH_LIST, pathList)
-                .putExtra(Utils.CURRENT_POSITION, getRealPosition(position)));
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < mSectionTitles.size(); i++) {
+            sb.append(mSectionTitles.get(i).getFirstPosition()).append(" ").append(mSectionTitles.get(i).getTitle()).append("\n");
+        }
 
+        position = getRealPosition(position);
+        if (position >= 0) { // in case the section title was click
+            startActivity(new Intent(getContext(), PhotoActivity.class)
+                    .putStringArrayListExtra(Utils.PHOTO_PATH_LIST, pathList)
+                    .putExtra(Utils.CURRENT_POSITION, position));
+        }
     }
 
     @Override
@@ -93,30 +110,40 @@ public class CollectionFragment extends Fragment implements RecyclerItemClickLis
     }
 
     private void getSectionTitles(ArrayList<Photo> photoList) {
-        Hashtable<String, Integer> titleList = new Hashtable<>();
+        Map<String, Integer> titleList = new HashMap<>();
         Locale locale = getContext().getResources().getConfiguration().locale;
         SimpleDateFormat formatter = new SimpleDateFormat("MMMMM, yyyy", locale);
+
         for (int i = 0; i < photoList.size(); i++) {
-            pathList.add(photoList.get(i).getPath());
             String date = formatter.format(photoList.get(i).getDate());
             if (titleList.get(date) == null || titleList.get(date) > i) {
                 titleList.put(date, i);
             }
         }
-        Set<String> dateSet = titleList.keySet();
-        for (String date : dateSet) {
-            mSectionTitles.add(new SectionedRecyclerViewAdapter.Section(titleList.get(date), date));
+
+        // convert to ArrayList and sort by value
+        ArrayList<Map.Entry<String, Integer>> sorted = new ArrayList(titleList.entrySet());
+        Collections.sort(sorted, new Comparator<Map.Entry<String, Integer>>() {
+            public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+                return o1.getValue().compareTo(o2.getValue());
+            }
+        });
+
+        for (Map.Entry<String, Integer> entry : sorted) {
+            mSectionTitles.add(new SectionedRecyclerViewAdapter.Section(entry.getValue(), entry.getKey()));
         }
     }
 
     private int getRealPosition(int position) {
-        for (SectionedRecyclerViewAdapter.Section s : mSectionTitles) {
-            if (s.getFirstPosition() < position) {
-                position -= 1;
-            } else {
-                break;
+        int realPosition = position;
+        for (int i = 0; i < mSectionTitles.size(); i++) {
+            int titlePosition = mSectionTitles.get(i).getFirstPosition()+i;
+            if (position == titlePosition) {
+                return -1;
+            } else if (position > titlePosition) {
+                realPosition -= 1;
             }
         }
-        return position;
+        return realPosition;
     }
 }

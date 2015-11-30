@@ -40,6 +40,7 @@ public class ImageStore {
             photo.setDate(date);
             listOfPhotos.add(photo);
         }
+        cursor.close();
         return listOfPhotos;
     }
 
@@ -55,7 +56,8 @@ public class ImageStore {
                 context.getContentResolver(), uri, projection, null, null, BUCKET_DISPLAY_NAME);
         while (cursor.moveToNext()) {
             albumNameList.add(cursor.getString(cursor.getColumnIndexOrThrow(BUCKET_DISPLAY_NAME)));
-        } cursor.close();
+        }
+        cursor.close();
 
         for (String name : albumNameList) {
             albumList.add(new Album(name, getPhotosInAlbum(context, name)));
@@ -80,15 +82,15 @@ public class ImageStore {
                 selectioArgs,
                 MediaStore.Images.ImageColumns.DATE_TAKEN
         );
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                String path = FILE_SLASH + cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA));
-                Long date = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN));
-                Photo photo = new Photo(path);
-                photo.setDate(date);
-                listOfPhotos.add(photo);
-            }
+        while (cursor.moveToNext()) {
+            String path = FILE_SLASH + cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA));
+            Long date = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN));
+            Photo photo = new Photo(path);
+            photo.setDate(date);
+            listOfPhotos.add(photo);
         }
+        cursor.close();
+
         return listOfPhotos;
     }
 
