@@ -111,6 +111,10 @@ public class SectionedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerV
         public CharSequence getTitle() {
             return title;
         }
+
+        public int getFirstPosition() {
+            return firstPosition;
+        }
     }
 
 

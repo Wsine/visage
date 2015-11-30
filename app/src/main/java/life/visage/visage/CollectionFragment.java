@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
@@ -23,10 +24,10 @@ import java.util.Map;
 import java.util.Set;
 
 public class CollectionFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener {
-    private ArrayList<Photo> photoList = new ArrayList<>();
+    List<SectionedRecyclerViewAdapter.Section> mSectionTitles = new ArrayList<>();
     private ArrayList<String> pathList = new ArrayList<>();
-    private String COLLECTION_NAME;
     private static final int mColumnWidth = 171;
+    private String COLLECTION_NAME;
 
     public CollectionFragment() {
         // required default constructor
@@ -55,34 +56,16 @@ public class CollectionFragment extends Fragment implements RecyclerItemClickLis
                 getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
 
 
-        photoList = ImageStore.getPhotosInAlbum(getContext(), COLLECTION_NAME);
-
-        Hashtable<String, Integer> titleList =new Hashtable<>();
-        Locale locale = getContext().getResources().getConfiguration().locale;
-        SimpleDateFormat formatter = new SimpleDateFormat("MMMMM, yyyy", locale);
-        for (int i = 0; i < photoList.size(); i++) {
-            String date = formatter.format(photoList.get(i).getDate());
-            if (titleList.get(date) == null || titleList.get(date) > i) {
-                titleList.put(date, i);
-            }
-        }
-
-        // add section titles
-        List<SectionedRecyclerViewAdapter.Section> sections = new ArrayList<>();
-        Set<String> dateSet = titleList.keySet();
-        for (String date : dateSet) {
-            sections.add(new SectionedRecyclerViewAdapter.Section(titleList.get(date), date));
-        }
-
+        ArrayList<Photo> photoList = ImageStore.getPhotosInAlbum(getContext(), COLLECTION_NAME);
+        getSectionTitles(photoList);
 
         PhotoRecyclerAdapter mAdapter = new PhotoRecyclerAdapter(mColumnWidth, photoList);
-        //Add your adapter to the sectionAdapter
+
         SectionedRecyclerViewAdapter.Section[] dummy =
-                new SectionedRecyclerViewAdapter.Section[sections.size()];
+                new SectionedRecyclerViewAdapter.Section[mSectionTitles.size()];
         final SectionedRecyclerViewAdapter mSectionedAdapter = new SectionedRecyclerViewAdapter(
                 getActivity(), R.layout.section, R.id.section_text, mAdapter);
-        mSectionedAdapter.setSections(sections.toArray(dummy));
-
+        mSectionedAdapter.setSections(mSectionTitles.toArray(dummy));
 
         mGridLayoutManager.setSpanSizeLookup(new GridAutofitLayoutManager.SpanSizeLookup() {
             @Override
@@ -92,7 +75,7 @@ public class CollectionFragment extends Fragment implements RecyclerItemClickLis
         });
 
         mRecyclerView.setAdapter(mSectionedAdapter);
-
+        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this.getActivity(), this));
         return view;
     }
 
@@ -100,12 +83,40 @@ public class CollectionFragment extends Fragment implements RecyclerItemClickLis
     public void onItemClick(View childView, int position) {
         startActivity(new Intent(getContext(), PhotoActivity.class)
                 .putStringArrayListExtra(Utils.PHOTO_PATH_LIST, pathList)
-                .putExtra(Utils.CURRENT_POSITION, position));
+                .putExtra(Utils.CURRENT_POSITION, getRealPosition(position)));
+
     }
 
     @Override
     public void onItemLongPress(View childView, int position) {
 
     }
-}
 
+    private void getSectionTitles(ArrayList<Photo> photoList) {
+        Hashtable<String, Integer> titleList = new Hashtable<>();
+        Locale locale = getContext().getResources().getConfiguration().locale;
+        SimpleDateFormat formatter = new SimpleDateFormat("MMMMM, yyyy", locale);
+        for (int i = 0; i < photoList.size(); i++) {
+            pathList.add(photoList.get(i).getPath());
+            String date = formatter.format(photoList.get(i).getDate());
+            if (titleList.get(date) == null || titleList.get(date) > i) {
+                titleList.put(date, i);
+            }
+        }
+        Set<String> dateSet = titleList.keySet();
+        for (String date : dateSet) {
+            mSectionTitles.add(new SectionedRecyclerViewAdapter.Section(titleList.get(date), date));
+        }
+    }
+
+    private int getRealPosition(int position) {
+        for (SectionedRecyclerViewAdapter.Section s : mSectionTitles) {
+            if (s.getFirstPosition() < position) {
+                position -= 1;
+            } else {
+                break;
+            }
+        }
+        return position;
+    }
+}
