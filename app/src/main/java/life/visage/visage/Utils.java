@@ -3,6 +3,8 @@ package life.visage.visage;
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.provider.MediaStore;
 
@@ -22,5 +24,15 @@ public class Utils {
 
     private Utils() {
         // to make this class uninstantiable
+    }
+
+    public static boolean isWifi(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager)context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeInfo = connectivityManager.getActiveNetworkInfo();
+        if (activeInfo != null && activeInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+            return true;
+        }
+        return false;
     }
 }

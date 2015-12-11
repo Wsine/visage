@@ -44,6 +44,28 @@ public class ImageStore {
         return listOfPhotos;
     }
 
+    public static ArrayList<Photo> getAllPCS(Context context) {
+        ArrayList<Photo> listOfPhotos = new ArrayList<>();
+        String[] projection = {
+                MediaStore.Images.ImageColumns.DATA,
+                MediaStore.Images.ImageColumns.DATE_TAKEN};
+        Cursor cursor = MediaStore.Images.Media.query(
+                context.getContentResolver(),
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                null, null, MediaStore.Images.ImageColumns.DATE_TAKEN
+        );
+        while (cursor.moveToNext()) {
+            String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA));
+            Long date = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN));
+            Photo photo = new Photo(path);
+            photo.setDate(date);
+            listOfPhotos.add(photo);
+        }
+        cursor.close();
+        return listOfPhotos;
+    }
+
     public static ArrayList<Album> getAllAlbums(Context context) {
         ArrayList<Album> albumList = new ArrayList<>();
         Set<String> albumNameList = new LinkedHashSet<>();

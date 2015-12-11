@@ -1,7 +1,6 @@
 package life.visage.visage;
 
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -9,8 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 
 import java.util.ArrayList;
 
@@ -34,8 +31,8 @@ public class TabTagsFragment extends Fragment implements RecyclerItemClickListen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAlbums = ImageStore.getAllCategories(getContext());
-        // TODO: get albuml list by cotegoris
+        mAlbums = ImageStore.getAllAlbums(getContext());
+        // TODO: get album list by categories
     }
 
     @Override

@@ -2,31 +2,31 @@ package life.visage.visage;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mDrawerToggle;
+    public static Intent serviceIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initInstances();
+        startBaiduService();
     }
 
     private void initInstances() {
@@ -43,10 +43,8 @@ public class MainActivity extends AppCompatActivity {
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
-                        Fragment mFragment = null;
                         switch (menuItem.getItemId()) {
                             case R.id.drawer_favourite: {
-                                mFragment = new CollectionFragment();
                                 break;
                             }
                             case R.id.drawer_people: {
@@ -65,15 +63,6 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                             }
                         }
-
-                        if (mFragment != null) {
-                            mFragmentManager.beginTransaction()
-                                    .replace(R.id.fragment_container, mFragment)
-                                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                                    .addToBackStack(null)
-                                    .commit();
-                        }
-
                         mDrawerLayout.closeDrawer(GravityCompat.START);
                         return false;
                     }
@@ -122,5 +111,11 @@ public class MainActivity extends AppCompatActivity {
         // Handle your other action bar items...
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startBaiduService() {
+        serviceIntent = new Intent(MainActivity.this, BaiduPCSService.class);
+        startService(serviceIntent);
+        Log.d("myDebug", "startBaiduService started!");
     }
 }
