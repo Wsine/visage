@@ -65,6 +65,24 @@ public class ImageStore {
         return albumList;
     }
 
+    public static ArrayList<Album> getAllCategories(Context context) {
+        ArrayList<Album> albumList = new ArrayList<>();
+        Set<String> albumNameList = new LinkedHashSet<>();
+
+        String[] projection = {ImageColumns.CATEGORY};
+        Cursor cursor = OpenHelper.getInstance(context).query(projection, null, null, ImageColumns.CATEGORY);
+
+        while (cursor.moveToNext()) {
+            albumNameList.add(cursor.getString(cursor.getColumnIndexOrThrow(ImageColumns.CATEGORY)));
+        }
+        cursor.close();
+
+        for (String name : albumNameList) {
+            albumList.add(new Album(name, getPhotosInAlbum(context, name)));
+        }
+        return albumList;
+    }
+
     public static ArrayList<Photo> getPhotosInAlbum(Context context, String albumName) {
         ArrayList<Photo> listOfPhotos = new ArrayList<>();
 

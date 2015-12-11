@@ -1,19 +1,22 @@
 package life.visage.visage;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.SimpleCursorTreeAdapter;
 
-public class TabTagsFragment extends Fragment {
+import java.util.ArrayList;
+
+public class TabTagsFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener {
     final static String name = "Tags";
+    ArrayList<Album> mAlbums = new ArrayList<>();
     private static TabTagsFragment instance;
 
     private TabTagsFragment() {
@@ -31,39 +34,48 @@ public class TabTagsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mAlbums = ImageStore.getAllCategories(getContext());
+        // TODO: get albuml list by cotegoris
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_tags, container, false);
-        ListView list = (ListView) view.findViewById(R.id.album_list);
+        int mColumnWidth = getResources().getDimensionPixelSize(R.dimen.album_width);
 
-        String[] projection = {
-                MediaStore.Images.ImageColumns._ID,
-                MediaStore.Images.ImageColumns.DISPLAY_NAME,
-                MediaStore.Images.ImageColumns.DATE_TAKEN
-        };
-        String[] from = {
-                MediaStore.Images.ImageColumns.DISPLAY_NAME,
-                MediaStore.Images.ImageColumns.DATE_TAKEN
-        };
-        int[] to = {
-                R.id.bucket_display_name,
-                R.id.display_name
-        };
-        list.setAdapter(new SimpleCursorAdapter(
-                getActivity(),
-                R.layout.album_entry,
-                MediaStore.Images.Media.query(
-                        view.getContext().getContentResolver(),
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        projection
-                ),
-                from,
-                to,
-                SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
+        // Inflate the layout for this fragment
+        View v = inflater.inflate(R.layout.fragment_albums, container, false);
 
-        return view;
+        RecyclerView mRecyclerView = (RecyclerView) v.findViewById(R.id.recycler_albums);
+        final GridAutofitLayoutManager mGridLayoutManager =
+                new GridAutofitLayoutManager(getActivity(), mColumnWidth);
+
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(mGridLayoutManager);
+        mRecyclerView.addItemDecoration(new GridSpacingDecoration(
+                getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
+        mRecyclerView.setAdapter(new AlbumRecyclerAdapter(mAlbums));
+        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this.getActivity(), this));
+
+        return v;
+    }
+
+    @Override
+    public void onItemClick(View childView, int position) {
+        FragmentManager mFragmentManager = getActivity().getSupportFragmentManager();
+        Fragment fragment = new CollectionFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(Utils.COLLECTION_NAME, mAlbums.get(position).getName());
+        fragment.setArguments(bundle);
+        mFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onItemLongPress(View childView, int position) {
+
     }
 }
