@@ -35,6 +35,7 @@ public class CollectionFragment extends Fragment implements RecyclerItemClickLis
     private ArrayList<String> pathList = new ArrayList<>();
     private static final int mColumnWidth = 171;
     private String COLLECTION_NAME;
+    private String COLLECTIION_TYPE = Utils.TYPE_TAGS;
 
     public CollectionFragment() {
         // required default constructor
@@ -62,8 +63,13 @@ public class CollectionFragment extends Fragment implements RecyclerItemClickLis
         mRecyclerView.addItemDecoration(new GridSpacingDecoration(
                 getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
 
-
-        ArrayList<Photo> photoList = ImageStore.getPhotosInAlbum(getContext(), COLLECTION_NAME);
+        COLLECTIION_TYPE = getArguments().getString(Utils.COLLECTION_TYPE);
+        ArrayList<Photo> photoList;
+        if (COLLECTIION_TYPE.equals(Utils.TYPE_TAGS)) {
+            photoList = ImageStore.getPhotosInCategory(getContext(), COLLECTION_NAME);
+        } else {
+            photoList = ImageStore.getPhotosInAlbum(getContext(), COLLECTION_NAME);
+        }
         for (Photo photo : photoList) {
             pathList.add(photo.getPath());
         }

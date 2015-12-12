@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.0"
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         applicationId "life.visage.visage"
@@ -17,18 +17,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:23.1.0'
-    compile 'com.android.support:design:23.1.0'
-    compile 'com.android.support:support-v4:23.1.0'
-    compile 'com.android.support:recyclerview-v7:23.1.0'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:support-v4:23.1.1'
+    compile 'com.android.support:recyclerview-v7:23.1.1'
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.klinkerapps:android-chips:1.0.1@aar'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.drewnoakes:metadata-extractor:2.8.1'
+    compile 'com.squareup.okhttp:okhttp:2.6.0'
     compile files('libs/Baidu-OAuth-SDK-Android-G-2.0.0.jar')
     compile files('libs/Baidu-PCS-SDK-Android-L2-2.1.0.jar')
     compile files('libs/httpmime-4.2.jar')

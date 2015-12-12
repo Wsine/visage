@@ -31,7 +31,7 @@ public class TabTagsFragment extends Fragment implements RecyclerItemClickListen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAlbums = ImageStore.getAllAlbums(getContext());
+        mAlbums = ImageStore.getAllCategories(getContext());
         // TODO: get album list by categories
     }
 
@@ -62,6 +62,7 @@ public class TabTagsFragment extends Fragment implements RecyclerItemClickListen
         FragmentManager mFragmentManager = getActivity().getSupportFragmentManager();
         Fragment fragment = new CollectionFragment();
         Bundle bundle = new Bundle();
+        bundle.putString(Utils.COLLECTION_TYPE, Utils.TYPE_TAGS);
         bundle.putString(Utils.COLLECTION_NAME, mAlbums.get(position).getName());
         fragment.setArguments(bundle);
         mFragmentManager.beginTransaction()

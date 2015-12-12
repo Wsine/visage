@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initInstances();
         startBaiduService();
+        Utils.testAPI(MainActivity.this);
     }
 
     private void initInstances() {

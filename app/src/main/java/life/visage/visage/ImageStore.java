@@ -7,6 +7,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
+
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -87,22 +95,80 @@ public class ImageStore {
         return albumList;
     }
 
+    // for debug
+    public static void testLocalDB(Context context) {
+        Log.i("CATEGORY", "testLocalDB called!");
+
+        String[] projection = {ImageColumns.DATA, ImageColumns.DATE_TAKEN, ImageColumns.NAME, ImageColumns.CATEGORY};
+        Cursor cursor = OpenHelper.getInstance(context).query(projection, null, null, ImageColumns.DATE_TAKEN);
+
+        while (cursor.moveToNext()) {
+            String category = cursor.getString(cursor.getColumnIndexOrThrow(ImageColumns.CATEGORY));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(ImageColumns.NAME));
+            String data = cursor.getString(cursor.getColumnIndexOrThrow(ImageColumns.DATA));
+            Long date = cursor.getLong(cursor.getColumnIndexOrThrow(ImageColumns.DATE_TAKEN));
+            Log.i("DB", name + " " + data + " " + category + " " + date);
+        }
+        cursor.close();
+
+    }
+    // end debug
+
     public static ArrayList<Album> getAllCategories(Context context) {
+        Log.i("CATEGORY", "getAllCategories called!");
         ArrayList<Album> albumList = new ArrayList<>();
-        Set<String> albumNameList = new LinkedHashSet<>();
+        Set<String> categoryList = new LinkedHashSet<>();
 
         String[] projection = {ImageColumns.CATEGORY};
         Cursor cursor = OpenHelper.getInstance(context).query(projection, null, null, ImageColumns.CATEGORY);
 
         while (cursor.moveToNext()) {
-            albumNameList.add(cursor.getString(cursor.getColumnIndexOrThrow(ImageColumns.CATEGORY)));
+            String category = cursor.getString(cursor.getColumnIndexOrThrow(ImageColumns.CATEGORY));
+            if (category != null) {
+                categoryList.add(category);
+                Log.i("CATEGORY", category);
+            } else {
+                categoryList.add(Utils.OTHERS);
+            }
         }
         cursor.close();
 
-        for (String name : albumNameList) {
-            albumList.add(new Album(name, getPhotosInAlbum(context, name)));
+        for (String category : categoryList) {
+            albumList.add(new Album(category, getPhotosInCategory(context, category)));
         }
         return albumList;
+    }
+
+    public static ArrayList<Photo> getPhotosInCategory(Context context, String category) {
+        ArrayList<Photo> listOfPhotos = new ArrayList<>();
+
+        String[] projection = {
+                ImageColumns.DATA,
+                ImageColumns.DATE_TAKEN};
+
+
+        String selection = ImageColumns.CATEGORY + " = ?";
+        String[] selectionArgs = {category};
+        if (category.equals(Utils.OTHERS)) {
+            selection = ImageColumns.CATEGORY + " is null";
+            selectionArgs = null;
+        }
+        Cursor cursor = OpenHelper.getInstance(context).query(
+                projection,
+                selection,
+                selectionArgs,
+                ImageColumns.DATE_TAKEN
+        );
+        while (cursor.moveToNext()) {
+            String path = cursor.getString(cursor.getColumnIndex(ImageColumns.DATA));
+            Long date = cursor.getLong(cursor.getColumnIndexOrThrow(ImageColumns.DATE_TAKEN));
+            Photo photo = new Photo(path);
+            photo.setDate(date);
+            listOfPhotos.add(photo);
+        }
+        cursor.close();
+
+        return listOfPhotos;
     }
 
     public static ArrayList<Photo> getPhotosInAlbum(Context context, String albumName) {
@@ -151,6 +217,15 @@ public class ImageStore {
         public static final String DATA = "data";
 
         /**
+         * The filename of the file
+         * <P>Type: TEXT</P>
+         * <P>Constant Values: "name"</P>
+         */
+        public static final String NAME = "name";
+
+        public static final String DATE_TAKEN = "datetaken";
+
+        /**
          * The category of the image.
          * <P>Format: see <a>https://www.projectoxford.ai/images/bright/vision/examples/86categories.txt</a></P>
          * <P>Type: TEXT</P>
@@ -182,12 +257,14 @@ public class ImageStore {
     public static class OpenHelper extends SQLiteOpenHelper {
         private static final String DB_NAME = "ImageStore.db";
         private static final String TABLE_NAME = "image_extended_meta";
-        private static final int DB_VERSION = 3;
+        private static final int DB_VERSION = 4;
 
         private static final String CREATE_TABLE =
                 "CREATE TABLE IF NOT EXISTS" + " " + TABLE_NAME + "(" +
                 ImageColumns._ID             + " " + "INTEGER PRIMARY KEY AUTOINCREMENT," +
                 ImageColumns.DATA            + " " + "TEXT NOT NULL," +
+                ImageColumns.NAME            + " " + "TEXT NOT NULL," +
+                ImageColumns.DATE_TAKEN      + " " + "INTEGER," +
                 ImageColumns.CATEGORY        + " " + "TEXT," +
                 ImageColumns.EVENT           + " " + "TEXT," +
                 ImageColumns.FACE_IDS        + " " + "TEXT);";
@@ -242,10 +319,48 @@ public class ImageStore {
             while (msCursor.moveToNext()) {
                 String data = FILE_SLASH + msCursor.getString(
                         msCursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
+                String name = msCursor.getString(
+                        msCursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME));
+                Long datetaken = msCursor.getLong(
+                        msCursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN)
+                );
                 ContentValues values = new ContentValues();
                 values.put(ImageColumns.DATA, data);
+                values.put(ImageColumns.NAME, name);
+                values.put(ImageColumns.DATE_TAKEN, datetaken);
                 db.insert(TABLE_NAME, null, values);
             }
+        }
+
+        /**
+         * Synced with the cloud database.
+         */
+        public void syncWithCloud() {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    OkHttpClient client = new OkHttpClient();
+                    Request request = new Request.Builder().url(Utils.CLOUD_API).build();
+                    try {
+                        Response response = client.newCall(request).execute();
+                        JSONArray jsonArray  = new JSONArray(response.body().string());
+                        SQLiteDatabase db = getWritableDatabase();
+                        for (int i = 0; i < jsonArray.length(); ++i) {
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            String name = jsonObject.getString(ImageColumns.NAME);
+                            String category = jsonObject.getString(ImageColumns.CATEGORY);
+                            ContentValues values = new ContentValues();
+                            values.put(ImageColumns.CATEGORY, category);
+                            String whereClause = ImageColumns.NAME + "=?";
+                            String[] whereArgs = {name};
+                            Log.i("CLOUD", name + " " + category);
+                            db.update(TABLE_NAME, values, whereClause, whereArgs);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
         }
 
         /**
