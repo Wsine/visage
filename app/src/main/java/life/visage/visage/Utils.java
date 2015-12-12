@@ -16,7 +16,7 @@ public class Utils {
     public static String CURRENT_POSITION = "CURRENT_POSITION";
     public static String TYPE_TAGS = "TYPE_TAGS";
     public static String TYPE_ALBUMS = "TYPE_ALBUMS";
-    public static String OTHERS = "others";
+    public static String OTHERS = "others_";
 
     public static String CLOUD_API = "http://mywsine.sinaapp.com/Visage/getDatabase2.php";
 
