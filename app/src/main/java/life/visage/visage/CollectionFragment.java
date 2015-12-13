@@ -2,8 +2,6 @@ package life.visage.visage;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -12,23 +10,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeMap;
 
 public class CollectionFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener {
     List<SectionedRecyclerViewAdapter.Section> mSectionTitles = new ArrayList<>();
@@ -54,7 +44,7 @@ public class CollectionFragment extends Fragment implements RecyclerItemClickLis
         ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getTitle());
 
-        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_favourite);
+        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_collection);
         final GridAutofitLayoutManager mGridLayoutManager =
                 new GridAutofitLayoutManager(view.getContext(), mColumnWidth);
 
@@ -97,11 +87,6 @@ public class CollectionFragment extends Fragment implements RecyclerItemClickLis
 
     @Override
     public void onItemClick(View childView, int position) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < mSectionTitles.size(); i++) {
-            sb.append(mSectionTitles.get(i).getFirstPosition()).append(" ").append(mSectionTitles.get(i).getTitle()).append("\n");
-        }
-
         position = getRealPosition(position);
         if (position >= 0) { // in case the section title was click
             startActivity(new Intent(getContext(), PhotoActivity.class)

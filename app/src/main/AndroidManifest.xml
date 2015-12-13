@@ -29,7 +29,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
@@ -43,8 +42,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="life.visage.visage.MainActivity" />
         </activity>
-
-        <service android:name=".BaiduPCSService" android:exported="true"></service>
+        <service android:name=".BaiduPCSService" android:exported="true" />
     </application>
 
 </manifest>

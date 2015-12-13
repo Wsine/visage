@@ -20,6 +20,8 @@ public class Utils {
 
     public static String CLOUD_API = "http://mywsine.sinaapp.com/Visage/getDatabase2.php";
 
+    public static String SEARCH_QUERY = "SEARCH_QUERY";
+
     private Utils() {
         // to make this class uninstantiable
     }

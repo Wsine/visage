@@ -13,7 +13,7 @@
         android:layout_height="match_parent">
 
         <android.support.design.widget.AppBarLayout
-            android:id="@+id/appbar_activity_photo"
+            android:id="@+id/appbar_activity_search_result"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:theme="@style/AppTheme.AppBarOverlay">
@@ -30,7 +30,7 @@
             android:id="@+id/photo_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/appbar_activity_photo"
+            android:layout_below="@id/appbar_activity_search_result"
             android:background="@color/black"
             />
     </RelativeLayout>

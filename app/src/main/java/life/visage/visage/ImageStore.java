@@ -30,6 +30,33 @@ public class ImageStore {
         // private constructor of no use
     }
 
+    public static ArrayList<Photo> searchPhotos(Context context, String str) {
+        ArrayList<Photo> listOfPhotos = new ArrayList<>();
+
+        String[] projection = {
+                ImageColumns.DATA,
+                ImageColumns.DATE_TAKEN};
+
+        String selection = ImageColumns.CATEGORY + " LIKE ?";
+        String[] selectionArgs = {"%"+str+"%"};
+        Cursor cursor = OpenHelper.getInstance(context).query(
+                projection,
+                selection,
+                selectionArgs,
+                ImageColumns.DATE_TAKEN
+        );
+        while (cursor.moveToNext()) {
+            String path = cursor.getString(cursor.getColumnIndex(ImageColumns.DATA));
+            Long date = cursor.getLong(cursor.getColumnIndexOrThrow(ImageColumns.DATE_TAKEN));
+            Photo photo = new Photo(path);
+            photo.setDate(date);
+            listOfPhotos.add(photo);
+        }
+        cursor.close();
+
+        return listOfPhotos;
+    }
+
     public static ArrayList<Photo> getAllPhotos(Context context) {
         ArrayList<Photo> listOfPhotos = new ArrayList<>();
         String[] projection = {

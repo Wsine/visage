@@ -19,6 +19,7 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mDrawerToggle;
+    private FragmentManager mFragmentManager;
     public static Intent serviceIntent;
 
     @Override
@@ -28,13 +29,20 @@ public class MainActivity extends AppCompatActivity {
         initInstances();
         startBaiduService();
         Utils.testAPI(MainActivity.this);
+        handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
     }
 
     private void initInstances() {
-        final DrawerLayout mDrawerLayout        = (DrawerLayout) findViewById(R.id.drawerLayout);
-        final FragmentManager mFragmentManager  = getSupportFragmentManager();
-        NavigationView mNavigationView          = (NavigationView) findViewById(R.id.navigation);
-        Toolbar mToolbar                        = (Toolbar) findViewById(R.id.toolbar);
+        final DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        NavigationView mNavigationView   = (NavigationView) findViewById(R.id.navigation);
+        Toolbar mToolbar                 = (Toolbar) findViewById(R.id.toolbar);
+        mFragmentManager                 = getSupportFragmentManager();
         setSupportActionBar(mToolbar);
 
         mFragmentManager.beginTransaction()
@@ -88,16 +96,9 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchManager searchManager = (SearchManager) MainActivity.this.getSystemService(Context.SEARCH_SERVICE);
-
-        SearchView searchView = null;
-        if (searchItem != null) {
-            searchView = (SearchView) searchItem.getActionView();
-        }
-        if (searchView != null) {
-            searchView.setQueryHint("search...");
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(MainActivity.this.getComponentName()));
-        }
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -118,5 +119,19 @@ public class MainActivity extends AppCompatActivity {
         serviceIntent = new Intent(MainActivity.this, BaiduPCSService.class);
         startService(serviceIntent);
         Log.d("myDebug", "startBaiduService started!");
+    }
+
+    private void handleIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            SearchResultsFragment fragment = new SearchResultsFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString(Utils.SEARCH_QUERY, query);
+            fragment.setArguments(bundle);
+            mFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(query)
+                    .commit();
+        }
     }
 }
