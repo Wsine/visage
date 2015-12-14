@@ -23,7 +23,7 @@ import java.util.Map;
 public class CollectionFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener {
     List<SectionedRecyclerViewAdapter.Section> mSectionTitles = new ArrayList<>();
     private ArrayList<String> pathList = new ArrayList<>();
-    private static final int mColumnWidth = 171;
+    private static final int THUMBNAIL_WIDTH = Utils.getThumbnailWidth();
     private String COLLECTION_NAME;
     private String COLLECTIION_TYPE = Utils.TYPE_TAGS;
 
@@ -46,11 +46,11 @@ public class CollectionFragment extends Fragment implements RecyclerItemClickLis
 
         RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_collection);
         final GridAutofitLayoutManager mGridLayoutManager =
-                new GridAutofitLayoutManager(view.getContext(), mColumnWidth);
+                new GridAutofitLayoutManager(view.getContext(), THUMBNAIL_WIDTH);
 
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mGridLayoutManager);
-        mRecyclerView.addItemDecoration(new GridSpacingDecoration(
+        mRecyclerView.addItemDecoration(new GridAutofitLayoutManager.GridSpacingDecoration(
                 getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
 
         COLLECTIION_TYPE = getArguments().getString(Utils.COLLECTION_TYPE);
@@ -65,12 +65,12 @@ public class CollectionFragment extends Fragment implements RecyclerItemClickLis
         }
         getSectionTitles(photoList);
 
-        PhotoRecyclerAdapter mAdapter = new PhotoRecyclerAdapter(mColumnWidth, photoList);
+        PhotoRecyclerAdapter mAdapter = new PhotoRecyclerAdapter(THUMBNAIL_WIDTH, photoList);
 
         SectionedRecyclerViewAdapter.Section[] dummy =
                 new SectionedRecyclerViewAdapter.Section[mSectionTitles.size()];
         final SectionedRecyclerViewAdapter mSectionedAdapter = new SectionedRecyclerViewAdapter(
-                getActivity(), R.layout.section, R.id.section_text, mAdapter);
+                getActivity(), R.layout.section_title, R.id.section_text, mAdapter);
         mSectionedAdapter.setSections(mSectionTitles.toArray(dummy));
 
         mGridLayoutManager.setSpanSizeLookup(new GridAutofitLayoutManager.SpanSizeLookup() {
@@ -89,7 +89,7 @@ public class CollectionFragment extends Fragment implements RecyclerItemClickLis
     public void onItemClick(View childView, int position) {
         position = getRealPosition(position);
         if (position >= 0) { // in case the section title was click
-            startActivity(new Intent(getContext(), PhotoActivity.class)
+            startActivity(new Intent(getContext(), PhotoDetailActivity.class)
                     .putStringArrayListExtra(Utils.PHOTO_PATH_LIST, pathList)
                     .putExtra(Utils.CURRENT_POSITION, position));
         }

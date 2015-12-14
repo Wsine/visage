@@ -10,45 +10,35 @@ import android.view.ViewGroup;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import butterknife.Bind;
+import butterknife.BindDimen;
+import butterknife.ButterKnife;
+
 public class TabEventsFragment extends Fragment {
-    static final String name = "Events";
-    private static TabEventsFragment instance;
-    private ArrayList<Photo> photoList = new ArrayList<>();
-    private static final int mColumnWidth = 171;
-
-
-    private TabEventsFragment() {
-        // Required empty public constructor
-    }
-
-    public static TabEventsFragment getInstance() {
-        if (instance == null) {
-            instance = new TabEventsFragment();
-        }
-
-        return instance;
-    }
+    @Bind(R.id.recycler_allphotos) RecyclerView mRecyclerView;
+    @BindDimen(R.dimen.grid_spacing) int mGridSpacing;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_events, container, false);
-        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_allphotos);
+        final int THUMBNAIL_WIDTH = Utils.getThumbnailWidth();
+        ButterKnife.bind(this, view);
+
         final GridAutofitLayoutManager mGridLayoutManager =
-                new GridAutofitLayoutManager(getActivity(), mColumnWidth);
+                new GridAutofitLayoutManager(getActivity(), THUMBNAIL_WIDTH);
 
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mGridLayoutManager);
-        mRecyclerView.addItemDecoration(new GridSpacingDecoration(
-                getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
+        mRecyclerView.addItemDecoration(
+                new GridAutofitLayoutManager.GridSpacingDecoration(mGridSpacing));
 
-        photoList = ImageStore.getAllPhotos(getContext());
+        ArrayList<Photo> photoList = ImageStore.getAllPhotos(getContext());
 
         Hashtable<String, Integer> titleList = new Hashtable<>();
         Locale locale = getContext().getResources().getConfiguration().locale;
@@ -67,13 +57,12 @@ public class TabEventsFragment extends Fragment {
             sections.add(new SectionedRecyclerViewAdapter.Section(titleList.get(date), date));
         }
 
-
-        PhotoRecyclerAdapter mAdapter = new PhotoRecyclerAdapter(mColumnWidth, photoList);
+        PhotoRecyclerAdapter mAdapter = new PhotoRecyclerAdapter(THUMBNAIL_WIDTH, photoList);
         //Add your adapter to the sectionAdapter
         SectionedRecyclerViewAdapter.Section[] dummy =
                 new SectionedRecyclerViewAdapter.Section[sections.size()];
         final SectionedRecyclerViewAdapter mSectionedAdapter = new SectionedRecyclerViewAdapter(
-                getActivity(), R.layout.section, R.id.section_text, mAdapter);
+                getActivity(), R.layout.section_title, R.id.section_text, mAdapter);
         mSectionedAdapter.setSections(sections.toArray(dummy));
 
 

@@ -11,22 +11,13 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
+import butterknife.BindDimen;
+import butterknife.BindString;
+import butterknife.ButterKnife;
+
 public class TabAlbumsFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener {
-    final static String name = "Albums";
+    @BindDimen(R.dimen.album_width) int albumColumnWidth;
     ArrayList<Album> mAlbums = new ArrayList<>();
-    private static TabAlbumsFragment instance;
-
-    private TabAlbumsFragment() {
-        // do nothing
-    }
-
-    static public TabAlbumsFragment getInstance() {
-        if (instance == null) {
-            instance = new TabAlbumsFragment();
-        }
-
-        return instance;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,23 +28,21 @@ public class TabAlbumsFragment extends Fragment implements RecyclerItemClickList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        int mColumnWidth = getResources().getDimensionPixelSize(R.dimen.album_width);
+        View view = inflater.inflate(R.layout.fragment_albums, container, false);
+        ButterKnife.bind(this, view);
 
-        // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_albums, container, false);
-
-        RecyclerView mRecyclerView = (RecyclerView) v.findViewById(R.id.recycler_albums);
+        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_albums);
         final GridAutofitLayoutManager mGridLayoutManager =
-                new GridAutofitLayoutManager(getActivity(), mColumnWidth);
+                new GridAutofitLayoutManager(getActivity(), albumColumnWidth);
 
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mGridLayoutManager);
-        mRecyclerView.addItemDecoration(new GridSpacingDecoration(
+        mRecyclerView.addItemDecoration(new GridAutofitLayoutManager.GridSpacingDecoration(
                 getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
-        mRecyclerView.setAdapter(new AlbumRecyclerAdapter(mAlbums));
+        mRecyclerView.setAdapter(new AlbumsRecyclerAdapter(mAlbums));
         mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this.getActivity(), this));
 
-        return v;
+        return view;
     }
 
     @Override

@@ -16,43 +16,34 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private FragmentManager mFragmentManager;
-    public static Intent serviceIntent;
+
+    @Bind(R.id.drawerLayout) DrawerLayout mDrawerLayout;
+    @Bind(R.id.navigation) NavigationView mNavigationView;
+    @Bind(R.id.toolbar) Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initInstances();
-        startBaiduService();
-        Utils.testAPI(MainActivity.this);
-        handleIntent(getIntent());
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        handleIntent(intent);
-    }
-
-    private void initInstances() {
-        final DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-        NavigationView mNavigationView   = (NavigationView) findViewById(R.id.navigation);
-        Toolbar mToolbar                 = (Toolbar) findViewById(R.id.toolbar);
-        mFragmentManager                 = getSupportFragmentManager();
+        ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
 
+        mFragmentManager = getSupportFragmentManager();
         mFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, new MainFragment()).commit();
 
+        // TODO: for navigation drawer
         mNavigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
-                        switch (menuItem.getItemId()) {
+                    public boolean onNavigationItemSelected(MenuItem item) {
+                        switch (item.getItemId()) {
                             case R.id.drawer_favourite: {
                                 break;
                             }
@@ -75,8 +66,7 @@ public class MainActivity extends AppCompatActivity {
                         mDrawerLayout.closeDrawer(GravityCompat.START);
                         return false;
                     }
-                }
-        );
+                });
 
         // Set the drawer toggle as the DrawerListener
         mDrawerToggle = new ActionBarDrawerToggle(
@@ -87,8 +77,32 @@ public class MainActivity extends AppCompatActivity {
         mDrawerToggle.syncState();
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
+        assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+
+        handleIntent(getIntent());
+        startBaiduPCSService();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            SearchResultsFragment fragment = new SearchResultsFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString(Utils.SEARCH_QUERY, query);
+            fragment.setArguments(bundle);
+            mFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(query)
+                    .commit();
+        }
     }
 
     @Override
@@ -115,23 +129,8 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void startBaiduService() {
-        serviceIntent = new Intent(MainActivity.this, BaiduPCSService.class);
-        startService(serviceIntent);
-        Log.d("myDebug", "startBaiduService started!");
-    }
-
-    private void handleIntent(Intent intent) {
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            SearchResultsFragment fragment = new SearchResultsFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString(Utils.SEARCH_QUERY, query);
-            fragment.setArguments(bundle);
-            mFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .addToBackStack(query)
-                    .commit();
-        }
+    private void startBaiduPCSService() {
+        startService(new Intent(MainActivity.this, BaiduPCSService.class));
+        Log.i(Logger.SERVICE, "BaiduPCSService started!");
     }
 }

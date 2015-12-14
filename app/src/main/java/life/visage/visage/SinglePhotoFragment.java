@@ -10,9 +10,6 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
-/**
- * Created by Brian on 11/9/2015.
- */
 public class SinglePhotoFragment extends DialogFragment{
     static SinglePhotoFragment newInstance(String pathName) {
         SinglePhotoFragment singlePhotoFragment = new SinglePhotoFragment();
@@ -27,10 +24,10 @@ public class SinglePhotoFragment extends DialogFragment{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         String pathName = getArguments().getString("PATH");
-        View v = inflater.inflate(R.layout.photo_detail, container, false);
-        ImageView mImageView = (ImageView) v.findViewById(R.id.photo_detail);
+        View view = inflater.inflate(R.layout.photo_detail, container, false);
+        ImageView mImageView = (ImageView) view.findViewById(R.id.photo_detail);
         Picasso.with(mImageView.getContext()).load(pathName).into(mImageView);
 
-        return v;
+        return view;
     }
 }

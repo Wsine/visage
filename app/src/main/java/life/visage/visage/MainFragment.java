@@ -10,25 +10,37 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class MainFragment extends Fragment {
+    @Bind(R.id.pager) ViewPager mViewPager;
+    @Bind(R.id.tabLayout) TabLayout mTabLayout;
+
     public MainFragment() {
         // required default constructor
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View mRootView            = inflater.inflate(R.layout.fragment_main, container, false);
-        ViewPager mViewPager = (ViewPager) mRootView.findViewById(R.id.pager);
-        TabLayout mTabLayout = (TabLayout) mRootView.findViewById(R.id.tabLayout);
-        Toolbar mToolbar     = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        ButterKnife.bind(this, view);
 
-        ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
+        // when restore from other fragment, resume the actionbar title back to R.string.app_name
+        Toolbar mToolbar     = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.app_name);
 
-        mViewPager.setAdapter(new TabLayoutPagerAdapter(getChildFragmentManager()));
+        mViewPager.setAdapter(new TabLayoutPagerAdapter(getChildFragmentManager(), getActivity()));
         mTabLayout.setupWithViewPager(mViewPager);
         mViewPager.setCurrentItem(1);
 
-        return mRootView;
+        return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 }

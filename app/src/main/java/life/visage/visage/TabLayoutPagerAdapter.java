@@ -1,17 +1,18 @@
 package life.visage.visage;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-/**
- * Created by Brian on 2015/10/5.
- */
 public class TabLayoutPagerAdapter extends FragmentPagerAdapter {
     final static int NUM_PAGES = 3;
+    Context mContext;
 
-    public TabLayoutPagerAdapter(FragmentManager mFragmentManager) {
+    public TabLayoutPagerAdapter(FragmentManager mFragmentManager, Context context) {
         super(mFragmentManager);
+        mContext = context;
     }
 
     @Override
@@ -21,22 +22,24 @@ public class TabLayoutPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
+        Fragment fragment = new TabAlbumsFragment();
         switch (position) {
-            case 0: return TabEventsFragment.getInstance();
-            case 1: return TabAlbumsFragment.getInstance();
-            case 2: return TabTagsFragment.getInstance();
+            case 0: fragment = new TabEventsFragment(); break;
+            case 1: fragment = new TabAlbumsFragment(); break;
+            case 2: fragment = new TabTagsFragment(); break;
         }
-
-        return TabAlbumsFragment.getInstance();
+        return fragment;
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
+        Resources resources = mContext.getResources();
+        String title = resources.getString(R.string.tab_albums);
         switch (position) {
-            case 0: return TabEventsFragment.name;
-            case 1: return TabAlbumsFragment.name;
-            case 2: return TabTagsFragment.name;
+            case 0: title = resources.getString(R.string.tab_events); break;
+            case 1: title = resources.getString(R.string.tab_albums); break;
+            case 2: title = resources.getString(R.string.tab_tags); break;
         }
-        return "Albums";
+        return title;
     }
 }

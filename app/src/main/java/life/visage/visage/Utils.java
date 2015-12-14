@@ -40,4 +40,8 @@ public class Utils {
         ImageStore.OpenHelper.getInstance(context).syncWithCloud();
         ImageStore.testLocalDB(context);
     }
+
+    public static int getThumbnailWidth() {
+        return 171;
+    }
 }

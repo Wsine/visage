@@ -36,7 +36,7 @@ public class SearchResultsFragment extends Fragment
                 new GridAutofitLayoutManager(getActivity(), mColumnWidth);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mGridLayoutManager);
-        mRecyclerView.addItemDecoration(new GridSpacingDecoration(
+        mRecyclerView.addItemDecoration(new GridAutofitLayoutManager.GridSpacingDecoration(
                 getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
         PhotoRecyclerAdapter mAdapter = new PhotoRecyclerAdapter(mColumnWidth, resultPhotoList);
 
@@ -48,7 +48,7 @@ public class SearchResultsFragment extends Fragment
 
     @Override
     public void onItemClick(View childView, int position) {
-        startActivity(new Intent(getActivity(), PhotoActivity.class)
+        startActivity(new Intent(getActivity(), PhotoDetailActivity.class)
                 .putStringArrayListExtra(Utils.PHOTO_PATH_LIST, imagePath)
                 .putExtra(Utils.CURRENT_POSITION, position));
     }

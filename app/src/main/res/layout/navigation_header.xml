@@ -30,11 +30,11 @@
             android:textStyle="bold"
             android:textColor="@color/white"/>
 
-        <Spinner
-            android:id="@+id/email_spinner"
+        <!--TODO: should be Spinner here-->
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:entries="@array/email_spinner"
-            android:background="@null"/>
+            android:text="@string/email"
+            android:textColor="@color/white"/>
     </LinearLayout>
 </RelativeLayout>
