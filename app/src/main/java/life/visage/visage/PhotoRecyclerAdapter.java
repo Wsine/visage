@@ -13,21 +13,25 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import butterknife.BindDimen;
+import butterknife.ButterKnife;
+
 
 /**
  * Created by Brian on 2015/10/5.
  */
 public class PhotoRecyclerAdapter extends RecyclerView.Adapter<PhotoRecyclerAdapter.ViewHolder> {
-    private int mColumnWidth;
+    @BindDimen(R.dimen.thumbnail_width) int mColumnWidth;
     private ArrayList<Photo> photoArrayList;
 
     @Override
     public ViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
         LayoutInflater inflater = ((Activity) parent.getContext()).getLayoutInflater();
-        final View rootView = inflater.inflate(R.layout.photo_recycler_item, parent, false);
-        rootView.setLayoutParams(new GridView.LayoutParams(mColumnWidth, mColumnWidth));
+        final View view = inflater.inflate(R.layout.photo_recycler_item, parent, false);
+        ButterKnife.bind(this, view);
 
-        return new ViewHolder(rootView);
+        view.setLayoutParams(new GridView.LayoutParams(mColumnWidth, mColumnWidth));
+        return new ViewHolder(view);
     }
 
     @Override

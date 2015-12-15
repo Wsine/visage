@@ -13,18 +13,20 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.BindDimen;
-import butterknife.BindString;
 import butterknife.ButterKnife;
 
-public class TabTagsFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener {
+public class TabTagsFragment extends Fragment
+        implements RecyclerItemClickListener.OnItemClickListener {
     @BindDimen(R.dimen.album_width) int albumColumnWidth;
-    ArrayList<Album> mAlbums = new ArrayList<>();
+    @BindDimen(R.dimen.grid_spacing) int grid_spacing;
+    @Bind(R.id.recycler_collections) RecyclerView mRecyclerView;
+
+    ArrayList<Collection> collectionArrayList = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAlbums = ImageStore.getAllCategories(getContext());
-        // TODO: get album list by categories
+        collectionArrayList = ImageStore.getAllCategories(getContext());
     }
 
     @Override
@@ -33,15 +35,13 @@ public class TabTagsFragment extends Fragment implements RecyclerItemClickListen
         View view = inflater.inflate(R.layout.fragment_albums, container, false);
         ButterKnife.bind(this, view);
 
-        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_albums);
-        final GridAutofitLayoutManager mGridLayoutManager =
+        GridAutofitLayoutManager mGridLayoutManager =
                 new GridAutofitLayoutManager(getActivity(), albumColumnWidth);
 
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mGridLayoutManager);
-        mRecyclerView.addItemDecoration(new GridAutofitLayoutManager.GridSpacingDecoration(
-                getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
-        mRecyclerView.setAdapter(new AlbumsRecyclerAdapter(mAlbums));
+        mRecyclerView.addItemDecoration(new GridAutofitLayoutManager.GridSpacingDecoration(grid_spacing));
+        mRecyclerView.setAdapter(new CollectionsRecyclerAdapter(collectionArrayList));
         mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this.getActivity(), this));
 
         return view;
@@ -52,8 +52,7 @@ public class TabTagsFragment extends Fragment implements RecyclerItemClickListen
         FragmentManager mFragmentManager = getActivity().getSupportFragmentManager();
         Fragment fragment = new CollectionFragment();
         Bundle bundle = new Bundle();
-        bundle.putString(Utils.COLLECTION_TYPE, Utils.TYPE_TAGS);
-        bundle.putString(Utils.COLLECTION_NAME, mAlbums.get(position).getName());
+        bundle.putParcelable(Tag.COLLECTION, collectionArrayList.get(position));
         fragment.setArguments(bundle);
         mFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment)

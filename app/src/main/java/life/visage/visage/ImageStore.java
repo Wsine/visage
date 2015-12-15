@@ -24,10 +24,11 @@ import java.util.Set;
  * Dealing with image query stuff, synced with MediaStore regularly.
  */
 public class ImageStore {
-    private static final String FILE_SLASH = "file:///";
+    final private static String FILE_SLASH = "file:///";
+    final private static String CATEGORY_OTHERS = "others_";
 
     private ImageStore() {
-        // private constructor of no use
+        // private constructor of no use (prevent this class from instantiate)
     }
 
     public static ArrayList<Photo> searchPhotos(Context context, String str) {
@@ -48,8 +49,7 @@ public class ImageStore {
         while (cursor.moveToNext()) {
             String path = cursor.getString(cursor.getColumnIndex(ImageColumns.DATA));
             Long date = cursor.getLong(cursor.getColumnIndexOrThrow(ImageColumns.DATE_TAKEN));
-            Photo photo = new Photo(path);
-            photo.setDate(date);
+            Photo photo = new Photo(path, date);
             listOfPhotos.add(photo);
         }
         cursor.close();
@@ -71,8 +71,7 @@ public class ImageStore {
         while (cursor.moveToNext()) {
             String path = FILE_SLASH + cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA));
             Long date = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN));
-            Photo photo = new Photo(path);
-            photo.setDate(date);
+            Photo photo = new Photo(path, date);
             listOfPhotos.add(photo);
         }
         cursor.close();
@@ -93,16 +92,20 @@ public class ImageStore {
         while (cursor.moveToNext()) {
             String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA));
             Long date = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN));
-            Photo photo = new Photo(path);
-            photo.setDate(date);
+            Photo photo = new Photo(path, date);
             listOfPhotos.add(photo);
         }
         cursor.close();
         return listOfPhotos;
     }
 
-    public static ArrayList<Album> getAllAlbums(Context context) {
-        ArrayList<Album> albumList = new ArrayList<>();
+    /**
+     * Get all albums in local storage
+     * @param context for getting ContentResolver
+     * @return an ArrayList of Collection
+     */
+    public static ArrayList<Collection> getAllAlbums(Context context) {
+        ArrayList<Collection> albumList = new ArrayList<>();
         Set<String> albumNameList = new LinkedHashSet<>();
         Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
@@ -117,33 +120,13 @@ public class ImageStore {
         cursor.close();
 
         for (String name : albumNameList) {
-            albumList.add(new Album(name, getPhotosInAlbum(context, name)));
+            albumList.add(new Collection(name, getPhotosInAlbum(context, name)));
         }
         return albumList;
     }
 
-    // for debug
-    public static void testLocalDB(Context context) {
-        Log.i("CATEGORY", "testLocalDB called!");
-
-        String[] projection = {ImageColumns.DATA, ImageColumns.DATE_TAKEN, ImageColumns.NAME, ImageColumns.CATEGORY};
-        Cursor cursor = OpenHelper.getInstance(context).query(projection, null, null, ImageColumns.DATE_TAKEN);
-
-        while (cursor.moveToNext()) {
-            String category = cursor.getString(cursor.getColumnIndexOrThrow(ImageColumns.CATEGORY));
-            String name = cursor.getString(cursor.getColumnIndexOrThrow(ImageColumns.NAME));
-            String data = cursor.getString(cursor.getColumnIndexOrThrow(ImageColumns.DATA));
-            Long date = cursor.getLong(cursor.getColumnIndexOrThrow(ImageColumns.DATE_TAKEN));
-            Log.i("DB", name + " " + data + " " + category + " " + date);
-        }
-        cursor.close();
-
-    }
-    // end debug
-
-    public static ArrayList<Album> getAllCategories(Context context) {
-        Log.i("CATEGORY", "getAllCategories called!");
-        ArrayList<Album> albumList = new ArrayList<>();
+    public static ArrayList<Collection> getAllCategories(Context context) {
+        ArrayList<Collection> albumList = new ArrayList<>();
         Set<String> categoryList = new LinkedHashSet<>();
 
         String[] projection = {ImageColumns.CATEGORY};
@@ -153,15 +136,15 @@ public class ImageStore {
             String category = cursor.getString(cursor.getColumnIndexOrThrow(ImageColumns.CATEGORY));
             if (category != null) {
                 categoryList.add(category);
-                Log.i("CATEGORY", category);
+                Log.i(Tag.LOG_CATEGORY, category);
             } else {
-                categoryList.add(Utils.OTHERS);
+                categoryList.add(CATEGORY_OTHERS);
             }
         }
         cursor.close();
 
         for (String category : categoryList) {
-            albumList.add(new Album(category, getPhotosInCategory(context, category)));
+            albumList.add(new Collection(category, getPhotosInCategory(context, category)));
         }
         return albumList;
     }
@@ -176,7 +159,7 @@ public class ImageStore {
 
         String selection = ImageColumns.CATEGORY + " = ?";
         String[] selectionArgs = {category};
-        if (category.equals(Utils.OTHERS)) {
+        if (category.equals(CATEGORY_OTHERS)) {
             selection = ImageColumns.CATEGORY + " is null";
             selectionArgs = null;
         }
@@ -189,8 +172,7 @@ public class ImageStore {
         while (cursor.moveToNext()) {
             String path = cursor.getString(cursor.getColumnIndex(ImageColumns.DATA));
             Long date = cursor.getLong(cursor.getColumnIndexOrThrow(ImageColumns.DATE_TAKEN));
-            Photo photo = new Photo(path);
-            photo.setDate(date);
+            Photo photo = new Photo(path, date);
             listOfPhotos.add(photo);
         }
         cursor.close();
@@ -198,33 +180,39 @@ public class ImageStore {
         return listOfPhotos;
     }
 
+    /**
+     * Retrieve all photos in an Album from MediaStore.
+     * @param context the context for getting the ContentResolver
+     * @param albumName the name of the album, should match BUCKET_DISPLAY_NAME
+     * @return an ArrayList of Photos, sorted by DATE_TAKEN
+     */
     public static ArrayList<Photo> getPhotosInAlbum(Context context, String albumName) {
-        ArrayList<Photo> listOfPhotos = new ArrayList<>();
+        ArrayList<Photo> photoList = new ArrayList<>();
 
         String[] projection = {
                 MediaStore.Images.ImageColumns.DATA,
                 MediaStore.Images.ImageColumns.DATE_TAKEN};
         String selection = MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME + " = ?";
-        String[] selectioArgs = {albumName};
+        String[] selectionArgs = {albumName};
 
         Cursor cursor = MediaStore.Images.Media.query(
                 context.getContentResolver(),
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 projection,
                 selection,
-                selectioArgs,
+                selectionArgs,
                 MediaStore.Images.ImageColumns.DATE_TAKEN
         );
         while (cursor.moveToNext()) {
-            String path = FILE_SLASH + cursor.getString(cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA));
-            Long date = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN));
-            Photo photo = new Photo(path);
-            photo.setDate(date);
-            listOfPhotos.add(photo);
+            String path = FILE_SLASH + cursor.getString(
+                    cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA));
+            Long date = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_TAKEN));
+            photoList.add(new Photo(path, date));
         }
         cursor.close();
 
-        return listOfPhotos;
+        return photoList;
     }
 
     public interface ImageColumns {
@@ -236,7 +224,7 @@ public class ImageStore {
         public static final String _ID = "_id";
 
         /**
-         * The absolute path for the image file,
+         * The absolute path for the image file, with "file://" prefix
          * can be loaded into ImageView directly with Picasso.
          * <P>Type: TEXT</P>
          * <P>Constant Values: "data"</P>
@@ -250,6 +238,12 @@ public class ImageStore {
          */
         public static final String NAME = "name";
 
+        /**
+         * The date when the picture was taken.
+         * This is the number of milliseconds since 1970.1.1(the Epoch)
+         * <P>Type: INTEGER</P>
+         * <P>Constant Values: "datetaken"</P>
+         */
         public static final String DATE_TAKEN = "datetaken";
 
         /**
@@ -296,8 +290,6 @@ public class ImageStore {
                 ImageColumns.EVENT           + " " + "TEXT," +
                 ImageColumns.FACE_IDS        + " " + "TEXT);";
         private static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
-
-
 
         private static OpenHelper mInstance;
         private static Context mContext;
@@ -413,8 +405,8 @@ public class ImageStore {
 
         /**
          * Insert ContentValues into the database
-         * @param values, ContentValuese to be inserted into the database.
-         * @return The row id of the inerted entry.
+         * @param values, ContentValues to be inserted into the database.
+         * @return The row id of the inserted entry.
          */
         public long insert(ContentValues values) {
             SQLiteDatabase db = getWritableDatabase();

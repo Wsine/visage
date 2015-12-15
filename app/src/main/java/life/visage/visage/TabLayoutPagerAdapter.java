@@ -42,4 +42,8 @@ public class TabLayoutPagerAdapter extends FragmentPagerAdapter {
         }
         return title;
     }
+
+    public static int getMiddlePosition() {
+        return NUM_PAGES/2;
+    }
 }

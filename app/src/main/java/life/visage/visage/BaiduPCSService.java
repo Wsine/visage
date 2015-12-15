@@ -18,7 +18,7 @@ public class BaiduPCSService extends Service {
     public Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            if (Utils.isWifi(getApplicationContext())) {
+            if (Utils.hasWifi(getApplicationContext())) {
                 (new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -30,7 +30,7 @@ public class BaiduPCSService extends Service {
                     }
                 })).start();
             } else {
-                Log.d("myDebug", "Now is not WIFI state");
+                Log.d(Tag.LOG_WIFI, "No wifi available!");
             }
             handler.postDelayed(runnable, 60 * 60 * 1000);
         }
@@ -44,19 +44,19 @@ public class BaiduPCSService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d("myDebug", "BaiduPCSService created...");
+        Log.d(Tag.LOG_SERVICE, "BaiduPCSService created.");
         handler.post(runnable);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("myDebug", "BaiduPCSService: " + this + " started...");
+        Log.d(Tag.LOG_SERVICE, "BaiduPCSService started.");
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("myDebug", "BaiduPCSService: " + this + " destroyed...");
+        Log.d(Tag.LOG_SERVICE, "BaiduPCSService destroyed.");
     }
 }

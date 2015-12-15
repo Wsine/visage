@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
         handleIntent(getIntent());
         startBaiduPCSService();
+//        Utils.test(this);
     }
 
     @Override
@@ -131,6 +132,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void startBaiduPCSService() {
         startService(new Intent(MainActivity.this, BaiduPCSService.class));
-        Log.i(Logger.SERVICE, "BaiduPCSService started!");
+        Log.i(Tag.LOG_SERVICE, "BaiduPCSService started!");
     }
 }

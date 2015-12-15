@@ -33,7 +33,7 @@ public class MainFragment extends Fragment {
 
         mViewPager.setAdapter(new TabLayoutPagerAdapter(getChildFragmentManager(), getActivity()));
         mTabLayout.setupWithViewPager(mViewPager);
-        mViewPager.setCurrentItem(1);
+        mViewPager.setCurrentItem(TabLayoutPagerAdapter.getMiddlePosition());
 
         return view;
     }

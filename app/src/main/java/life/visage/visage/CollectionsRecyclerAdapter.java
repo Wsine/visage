@@ -16,8 +16,8 @@ import butterknife.Bind;
 import butterknife.BindDimen;
 import butterknife.ButterKnife;
 
-public class AlbumsRecyclerAdapter extends RecyclerView.Adapter<AlbumsRecyclerAdapter.ViewHolder> {
-    private ArrayList<Album> mAlbums;
+public class CollectionsRecyclerAdapter extends RecyclerView.Adapter<CollectionsRecyclerAdapter.ViewHolder> {
+    private ArrayList<Collection> collectionArrayList;
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -34,7 +34,7 @@ public class AlbumsRecyclerAdapter extends RecyclerView.Adapter<AlbumsRecyclerAd
 
     @Override
     public int getItemCount() {
-        return mAlbums.size();
+        return collectionArrayList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -49,18 +49,18 @@ public class AlbumsRecyclerAdapter extends RecyclerView.Adapter<AlbumsRecyclerAd
 
         public void bindData(int position) {
             Picasso.with(albumImage.getContext())
-                    .load(mAlbums.get(position).getCover())
+                    .load(collectionArrayList.get(position).getCover())
                     .resize(albumWidth, albumWidth)
                     .placeholder(R.drawable.placeholder)
                     .centerCrop()
                     .into(albumImage);
-            albumTitle.setText(mAlbums.get(position).getName());
+            albumTitle.setText(collectionArrayList.get(position).getTitle());
             albumTitle.getBackground().setAlpha(90);
         }
     }
 
-    public AlbumsRecyclerAdapter(ArrayList<Album> albums) {
-        mAlbums = albums;
+    public CollectionsRecyclerAdapter(ArrayList<Collection> albums) {
+        collectionArrayList = albums;
     }
 }
 

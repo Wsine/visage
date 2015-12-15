@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,52 +19,42 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class CollectionFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener {
-    List<SectionedRecyclerViewAdapter.Section> mSectionTitles = new ArrayList<>();
-    private ArrayList<String> pathList = new ArrayList<>();
-    private static final int THUMBNAIL_WIDTH = Utils.getThumbnailWidth();
-    private String COLLECTION_NAME;
-    private String COLLECTIION_TYPE = Utils.TYPE_TAGS;
+import butterknife.Bind;
+import butterknife.BindDimen;
+import butterknife.ButterKnife;
 
-    public CollectionFragment() {
-        // required default constructor
-    }
+/**
+ * TODO: should refactor the sectioning feature with a more robust library
+ * <a>https://github.com/truizlop/SectionedRecyclerView</a>
+ */
+public class CollectionFragment extends Fragment
+        implements RecyclerItemClickListener.OnItemClickListener {
+    @BindDimen(R.dimen.thumbnail_width) int thumbnailWidth;
+    @Bind(R.id.recycler_collection) RecyclerView mRecyclerView;
 
-    public String getTitle() {
-        COLLECTION_NAME = getArguments().getString(Utils.COLLECTION_NAME);
-        return COLLECTION_NAME;
-    }
+    private List<SectionedRecyclerViewAdapter.Section> mSectionTitles = new ArrayList<>();
+    private Collection collection;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_collection, container, false);
-        Toolbar mToolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(getTitle());
+        collection = getArguments().getParcelable(Tag.COLLECTION);
 
-        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_collection);
+        View view = inflater.inflate(R.layout.fragment_collection, container, false);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(collection.getTitle());
+        ButterKnife.bind(this, view);
+
         final GridAutofitLayoutManager mGridLayoutManager =
-                new GridAutofitLayoutManager(view.getContext(), THUMBNAIL_WIDTH);
+                new GridAutofitLayoutManager(view.getContext(), thumbnailWidth);
 
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mGridLayoutManager);
         mRecyclerView.addItemDecoration(new GridAutofitLayoutManager.GridSpacingDecoration(
                 getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
 
-        COLLECTIION_TYPE = getArguments().getString(Utils.COLLECTION_TYPE);
-        ArrayList<Photo> photoList;
-        if (COLLECTIION_TYPE.equals(Utils.TYPE_TAGS)) {
-            photoList = ImageStore.getPhotosInCategory(getContext(), COLLECTION_NAME);
-        } else {
-            photoList = ImageStore.getPhotosInAlbum(getContext(), COLLECTION_NAME);
-        }
-        for (Photo photo : photoList) {
-            pathList.add(photo.getPath());
-        }
-        getSectionTitles(photoList);
+        setupSectionTitles();
 
-        PhotoRecyclerAdapter mAdapter = new PhotoRecyclerAdapter(THUMBNAIL_WIDTH, photoList);
+        PhotoRecyclerAdapter mAdapter = new PhotoRecyclerAdapter(thumbnailWidth, collection.getPhotoArrayList());
 
         SectionedRecyclerViewAdapter.Section[] dummy =
                 new SectionedRecyclerViewAdapter.Section[mSectionTitles.size()];
@@ -90,8 +79,8 @@ public class CollectionFragment extends Fragment implements RecyclerItemClickLis
         position = getRealPosition(position);
         if (position >= 0) { // in case the section title was click
             startActivity(new Intent(getContext(), PhotoDetailActivity.class)
-                    .putStringArrayListExtra(Utils.PHOTO_PATH_LIST, pathList)
-                    .putExtra(Utils.CURRENT_POSITION, position));
+                    .putParcelableArrayListExtra(Tag.PHOTO_LIST, collection.getPhotoArrayList())
+                    .putExtra(Tag.CURRENT_POSITION, position));
         }
     }
 
@@ -100,10 +89,12 @@ public class CollectionFragment extends Fragment implements RecyclerItemClickLis
 
     }
 
-    private void getSectionTitles(ArrayList<Photo> photoList) {
+    // TODO: this method is ugly, should make it elegant
+    private void setupSectionTitles() {
+        ArrayList<Photo> photoList = collection.getPhotoArrayList();
         Map<String, Integer> titleList = new HashMap<>();
         Locale locale = getContext().getResources().getConfiguration().locale;
-        SimpleDateFormat formatter = new SimpleDateFormat("MMMMM, yyyy", locale);
+        SimpleDateFormat formatter = new SimpleDateFormat("MMM, yyyy");
 
         for (int i = 0; i < photoList.size(); i++) {
             String date = formatter.format(photoList.get(i).getDate());
