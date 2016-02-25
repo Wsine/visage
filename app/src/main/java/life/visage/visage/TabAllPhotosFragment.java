@@ -15,33 +15,28 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import butterknife.Bind;
 import butterknife.BindDimen;
 import butterknife.ButterKnife;
 
-/**
- * TODO: should refactor the sectioning feature with a more robust library
- * <a>https://github.com/truizlop/SectionedRecyclerView</a>
- */
-public class CollectionFragment extends Fragment
-        implements RecyclerItemClickListener.OnItemClickListener {
+public class TabAllPhotosFragment extends Fragment
+        implements RecyclerItemClickListener.OnItemClickListener{
     @BindDimen(R.dimen.thumbnail_width) int thumbnailWidth;
     @Bind(R.id.recycler_collection) RecyclerView mRecyclerView;
 
     private List<SectionedRecyclerViewAdapter.Section> mSectionTitles = new ArrayList<>();
-    private Collection collection;
+    private ArrayList<Photo> photoList = new ArrayList<>();
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        collection = getArguments().getParcelable(Tag.COLLECTION);
-
         View view = inflater.inflate(R.layout.fragment_collection, container, false);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(collection.getTitle());
         ButterKnife.bind(this, view);
 
         final GridAutofitLayoutManager mGridLayoutManager =
@@ -52,9 +47,12 @@ public class CollectionFragment extends Fragment
         mRecyclerView.addItemDecoration(new GridAutofitLayoutManager.GridSpacingDecoration(
                 getResources().getDimensionPixelSize(R.dimen.grid_spacing)));
 
-        setupSectionTitles();
+        photoList = ImageStore.getAllPhotos(getContext());
+        if (mSectionTitles.isEmpty()) {
+            setupSectionTitles();
+        }
 
-        PhotoRecyclerAdapter mAdapter = new PhotoRecyclerAdapter(thumbnailWidth, collection.getPhotoArrayList());
+        PhotoRecyclerAdapter mAdapter = new PhotoRecyclerAdapter(thumbnailWidth, photoList);
 
         SectionedRecyclerViewAdapter.Section[] dummy =
                 new SectionedRecyclerViewAdapter.Section[mSectionTitles.size()];
@@ -79,7 +77,7 @@ public class CollectionFragment extends Fragment
         position = getRealPosition(position);
         if (position >= 0) { // in case the section title was click
             startActivity(new Intent(getContext(), PhotoDetailActivity.class)
-                    .putParcelableArrayListExtra(Tag.PHOTO_LIST, collection.getPhotoArrayList())
+                    .putParcelableArrayListExtra(Tag.PHOTO_LIST, photoList)
                     .putExtra(Tag.CURRENT_POSITION, position));
         }
     }
@@ -91,7 +89,6 @@ public class CollectionFragment extends Fragment
 
     // TODO: this method is ugly, should make it elegant
     private void setupSectionTitles() {
-        ArrayList<Photo> photoList = collection.getPhotoArrayList();
         Map<String, Integer> titleList = new HashMap<>();
         SimpleDateFormat formatter = new SimpleDateFormat("MMM, yyyy");
 

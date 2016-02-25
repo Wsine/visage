@@ -2,9 +2,12 @@ package life.visage.visage;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
+import java.util.ArrayList;
 
 public class TabLayoutPagerAdapter extends FragmentPagerAdapter {
     final static int NUM_PAGES = 3;
@@ -24,7 +27,7 @@ public class TabLayoutPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         Fragment fragment = new TabAlbumsFragment();
         switch (position) {
-            case 0: fragment = new TabEventsFragment(); break;
+            case 0: fragment = new TabAllPhotosFragment(); break;
             case 1: fragment = new TabAlbumsFragment(); break;
             case 2: fragment = new TabTagsFragment(); break;
         }
@@ -36,7 +39,7 @@ public class TabLayoutPagerAdapter extends FragmentPagerAdapter {
         Resources resources = mContext.getResources();
         String title = resources.getString(R.string.tab_albums);
         switch (position) {
-            case 0: title = resources.getString(R.string.tab_events); break;
+            case 0: title = resources.getString(R.string.tab_all_photos); break;
             case 1: title = resources.getString(R.string.tab_albums); break;
             case 2: title = resources.getString(R.string.tab_tags); break;
         }

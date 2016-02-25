@@ -8,7 +8,7 @@
     <string name="closeDrawerContentDescRes">closeDrawerContentDescRes</string>
 
     <!--Tab Title-->
-    <string name="tab_events">Events</string>
+    <string name="tab_all_photos">All Photos</string>
     <string name="tab_albums">Albums</string>
     <string name="tab_tags">Tags</string>
 
